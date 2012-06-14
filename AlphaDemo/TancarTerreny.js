@@ -7,10 +7,18 @@ private var displayMinutes : int;
 private var startTime : int;
 private var roundedRestSeconds : int;
 
+
+private var screenPos;
+private var ray;
+private var hit : RaycastHit;
+private var vista_previa : boolean;
+
+private var preview : Rigidbody;
+private var solid : Rigidbody;
 private var cubesPlaced = new ArrayList();
 
 var boolmatrix: Array;
-var pesamatrix: Array;
+var figura: Array;
 
 var countDownSeconds : int;
 
@@ -32,134 +40,152 @@ function Update(){
 	//es comprova el temps, si encara queda temps
 	//es poden posar cubs
 	//si el temps es 0 s'han de canviar les textures dels cubs per parets 
+	screenPos = Input.mousePosition;
+	ray = film.ScreenPointToRay(screenPos);
+	
 	if(Input.GetButtonDown("Fire1")){
-		var screenPos = Input.mousePosition;
-		var ray = film.ScreenPointToRay(screenPos);
-		var hit : RaycastHit;
+		//screenPos = Input.mousePosition;
+		//ray = film.ScreenPointToRay(screenPos);
 		if(Physics.Raycast(ray,hit)){
 			hit.point.x = Mathf.Round(hit.point.x);
 			hit.point.y = Mathf.Round(hit.point.y);
 			hit.point.z = Mathf.Round(hit.point.z);
 			if(!creat){
 				GenerateTiles(hit);
-				boolmatrix = new Array(width);
-				for(var i=0;i<boolmatrix.length;i++){
-					boolmatrix[i]=new Array(height);
-				}
-				for(i=0;i<boolmatrix.length;i++){
-					for(var j=0;j<boolmatrix[i].length;j++){
-						boolmatrix[i][j]=false;
-						//Debug.LogWarning("boolmatrix: i: "+i+" j: "+j+" valor: "+boolmatrix[i][j]);
-					}
-				}
-			}else if((hit.collider.tag == "Wall") ||(hit.collider.tag == "Plane")){
+				GenerateHashMap();	
+			}else{
+				 if((hit.collider.tag == "Plane")||(hit.collider.tag == "Untagged")){
 				//PlaceCube(hit);
 				//boolmatrix[zgrid-hit.point.z][hit.point.x-xgrid] = true;<------------------------------------------
-				//Debug.LogWarning("hit.point.z	: "+(zgrid-hit.point.z)+" "+"hit.point.x: "+(hit.point.x-xgrid));
-				//Debug.LogWarning("posiciomatriuz: "+(zgrid-hit.point.z)+"posiciomatriux	: "+(hit.point.x-xgrid));
-				var solid : Rigidbody  = cubes[Random.Range(0,cubes.length)];
+				//solid = cubes[Random.Range(0,cubes.length)];<------------------------------------------
 				
-				pesamatrix=ComprovarElement(solid);
-				if(colocarElement(boolmatrix,pesamatrix,(zgrid-hit.point.z),(hit.point.x-xgrid))){
-					var muralla : Rigidbody = Instantiate(solid,Vector3(hit.point.x,(hit.point.y+1),hit.point.z), transform.rotation); 
-					Debug.Log("x: "+hit.point.x+"z: "+hit.point.z);
-					cubesPlaced.Add(muralla);
-				}
+					figura=ComprovarElement(preview);
+				
+					if(colocarElement(boolmatrix,figura,(zgrid-hit.point.z),(hit.point.x-xgrid))){
+						solid=DestroyPreview();
+						var muralla : Rigidbody = Instantiate(solid,Vector3(hit.point.x,1,hit.point.z), transform.rotation); 
+						cubesPlaced.Add(muralla);
+					}
+				}else{
+				
+					Debug.Log("Tag del que he clicat "+hit.collider.tag);
+				}	
+			}
+		}
+	}else{
+		if(Physics.Raycast(ray,hit)){
+			if(!vista_previa){
+				CreatePreview(hit);
 			}else{
-				Debug.LogError("Has clicat on no debies");
+				MovePreview(hit);
 			}	
 		}
 	}
 }
 
+function CreatePreview(hit:RaycastHit){
+	solid = cubes[Random.Range(0,cubes.length)];
+	preview = Instantiate(solid,Vector3(hit.point.x,1,hit.point.z), transform.rotation);
+	vista_previa=true; 
+	
+}
+
+function MovePreview(hit:RaycastHit){
+    preview.transform.position = hit.transform.position;
+}
+
+
+function DestroyPreview(){
+	Destroy(preview.gameObject);
+	vista_previa=false;
+	return solid;
+}
 
 
 //Hashtable amb clau Vector3 per indexar les taules.
 //Hashmap 
 
-function Start(){}
-
 function ComprovarElement(element:Rigidbody){
 	switch (element.tag){
 		case ("IHoritzontal"):
 			Debug.Log("És la IHoritzontal");
-			pesamatrix = new Array(1);
-			pesamatrix[0] = new Array(4);
-			for(i=0;i<pesamatrix.length;i++){
-				for(j=0;j<pesamatrix[i].length;j++){
-					pesamatrix[i][j]=true;
+			figura = new Array(1);
+			figura[0] = new Array(4);
+			for(i=0;i<figura.length;i++){
+				for(j=0;j<figura[i].length;j++){
+					figura[i][j]=true;
 				}
 			}
 			break;
 		
 		case ("IVertical"):
 			Debug.Log("És la IVertical");
-			pesamatrix = new Array(4);
-			for(i=0;i<pesamatrix.length;i++){
-				pesamatrix[i]=new Array(1);
+			figura = new Array(4);
+			for(i=0;i<figura.length;i++){
+				figura[i]=new Array(1);
 			}
-			for(i=0;i<pesamatrix.length;i++){
-				for(j=0;j<pesamatrix[i].length;j++){
-					pesamatrix[i][j]=true;
+			for(i=0;i<figura.length;i++){
+				for(j=0;j<figura[i].length;j++){
+					figura[i][j]=true;
 				}
 			}
 			break;
 			
 		case ("L"):
 			Debug.Log("És la L");
-			pesamatrix = new Array(3);
-			pesamatrix[0] = new Array(1);
-			pesamatrix[1] = new Array(1);
-			pesamatrix[2] = new Array(2);
-			for(i=0;i<pesamatrix.length;i++){
-				for(j=0;j<pesamatrix[i].length;j++){
-					pesamatrix[i][j]=true;
+			figura = new Array(3);
+			figura[0] = new Array(1);
+			figura[1] = new Array(1);
+			figura[2] = new Array(2);
+			for(i=0;i<figura.length;i++){
+				for(j=0;j<figura[i].length;j++){
+					figura[i][j]=true;
 				}
 			}
 			break;
 			
 		case ("LGanxoHoritzontal"):
 			Debug.Log("És la LGanxoHoritzontal");
-			pesamatrix = new Array(2);
-			pesamatrix[0] = new Array(3);
-			pesamatrix[1] = new Array(1);
+			figura = new Array(2);
+			figura[0] = new Array(3);
+			figura[1] = new Array(1);
 		
-			for(i=0;i<pesamatrix.length;i++){
-				for(j=0;j<pesamatrix[i].length;j++){
-					pesamatrix[i][j]=true;
+			for(i=0;i<figura.length;i++){
+				for(j=0;j<figura[i].length;j++){
+					figura[i][j]=true;
 				}
 			}
 			break;
 			
 		case ("LVertical"):
 			Debug.Log("És la LVertical");
-			pesamatrix = new Array(3);
-			for(i=0;i<pesamatrix.length;i++){
-				pesamatrix[i]=new Array(2);
+			figura = new Array(3);
+			for(i=0;i<figura.length;i++){
+				figura[i]=new Array(2);
 			}
 		
-			for(i=0;i<pesamatrix.length;i++){
-				for(j=0;j<pesamatrix[i].length;j++){
+			for(i=0;i<figura.length;i++){
+				for(j=0;j<figura[i].length;j++){
 					if(i>0 && j==0)
-						pesamatrix[i][j]=false;
+						figura[i][j]=false;
 					else
-						pesamatrix[i][j]=true;
+						figura[i][j]=true;
 				}	
 			}
 			break;
 		
 		case ("LHoritzontal"):
 			Debug.Log("És la LHoritzontal");
-			pesamatrix = new Array(2);
-			pesamatrix[0] = new Array(3);
-			pesamatrix[1] = new Array(3);
+			figura = new Array(2);
+			figura[0] = new Array(3);
+			figura[1] = new Array(3);
 		
-			for(i=0;i<pesamatrix.length;i++){
-				for(j=0;j<pesamatrix[i].length;j++){
+			for(i=0;i<figura.length;i++){
+				for(j=0;j<figura[i].length;j++){
 					if(i==0 && j<2)
-						pesamatrix[i][j]=false;
+						figura[i][j]=false;
 					else
-						pesamatrix[i][j]=true;
+						figura[i][j]=true;
 				}	
 			}
 			break;
@@ -167,45 +193,45 @@ function ComprovarElement(element:Rigidbody){
 		
 		case ("LInvertidaHoritzontal"):
 			Debug.Log("És la LInvertidaHoritzontal");
-			pesamatrix = new Array(2);
-			pesamatrix[0] = new Array(1);
-			pesamatrix[1] = new Array(3);
-			for(i=0;i<pesamatrix.length;i++){
-				for(j=0;j<pesamatrix[i].length;j++){
+			figura = new Array(2);
+			figura[0] = new Array(1);
+			figura[1] = new Array(3);
+			for(i=0;i<figura.length;i++){
+				for(j=0;j<figura[i].length;j++){
 					if(i==0 && j>0)
-						pesamatrix[i][j]=false;
+						figura[i][j]=false;
 					else
-						pesamatrix[i][j]=true;
+						figura[i][j]=true;
 				}
 			}
 			break;
 		
 		case ("LInvertidaGanxoVertical"):
 			Debug.Log("És la LGanxoVertical");
-			pesamatrix = new Array(3);
-			pesamatrix[0] = new Array(2);
-			pesamatrix[1] = new Array(1);
-			pesamatrix[2] = new Array(1);
-			for(i=0;i<pesamatrix.length;i++){
-				for(j=0;j<pesamatrix[i].length;j++){
-					pesamatrix[i][j]=true;
+			figura = new Array(3);
+			figura[0] = new Array(2);
+			figura[1] = new Array(1);
+			figura[2] = new Array(1);
+			for(i=0;i<figura.length;i++){
+				for(j=0;j<figura[i].length;j++){
+					figura[i][j]=true;
 				}
 			}
 			break;
 
 		case ("LInvertida"):
 			Debug.Log("És la LInvertida");
-			pesamatrix = new Array(3);
+			figura = new Array(3);
 						
-			pesamatrix[0] = new Array(2);
-			pesamatrix[1] = new Array(2);
-			pesamatrix[2] = new Array(2);
-			for(i=0;i<pesamatrix.length;i++){
-				for(j=0;j<pesamatrix[i].length;j++){
+			figura[0] = new Array(2);
+			figura[1] = new Array(2);
+			figura[2] = new Array(2);
+			for(i=0;i<figura.length;i++){
+				for(j=0;j<figura[i].length;j++){
 					if(i<=1 && j==0)
-						pesamatrix[i][j]=false;
+						figura[i][j]=false;
 					else
-						pesamatrix[i][j]=true;
+						figura[i][j]=true;
 				}
 			}
 			
@@ -213,139 +239,139 @@ function ComprovarElement(element:Rigidbody){
 			
 		case ("LInvertidaGanxoHoritzontal"):
 			Debug.Log("És la LInvertidaGanxoHoritzontal");
-			pesamatrix = new Array(2);
-			pesamatrix[0] = new Array(3);
-			pesamatrix[1] = new Array(3);
-			for(i=0;i<pesamatrix.length;i++){
-				for(j=0;j<pesamatrix[i].length;j++){
+			figura = new Array(2);
+			figura[0] = new Array(3);
+			figura[1] = new Array(3);
+			for(i=0;i<figura.length;i++){
+				for(j=0;j<figura[i].length;j++){
 					if(i==1 && j<=1)
-						pesamatrix[i][j]=false;
+						figura[i][j]=false;
 					else
-						pesamatrix[i][j]=true;
+						figura[i][j]=true;
 				}
 			}
 			break;
 				
 		case ("Cub"):
 			Debug.Log("És el Cub");
-			pesamatrix = new Array(2);
-			pesamatrix[0] = new Array(2);
-			pesamatrix[1] = new Array(2);
-			for(i=0;i<pesamatrix.length;i++){
-				for(j=0;j<pesamatrix[i].length;j++){
-					pesamatrix[i][j]=true;
+			figura = new Array(2);
+			figura[0] = new Array(2);
+			figura[1] = new Array(2);
+			for(i=0;i<figura.length;i++){
+				for(j=0;j<figura[i].length;j++){
+					figura[i][j]=true;
 				}
 			}
 			break;
 		
 		case ("T"):
 			Debug.Log("És la T");
-			pesamatrix = new Array(2);
-			pesamatrix[0] = new Array(3);
-			pesamatrix[1] = new Array(2);
-			for(i=0;i<pesamatrix.length;i++){
-				for(j=0;j<pesamatrix[i].length;j++){
+			figura = new Array(2);
+			figura[0] = new Array(3);
+			figura[1] = new Array(2);
+			for(i=0;i<figura.length;i++){
+				for(j=0;j<figura[i].length;j++){
 					if(i==1 && j==0)
-						pesamatrix[i][j]=false;
+						figura[i][j]=false;
 					else
-						pesamatrix[i][j]=true;
+						figura[i][j]=true;
 				}
 			}
 			break;
 			
 		case ("TVertical"):
 			Debug.Log("És la TVertical");
-			pesamatrix = new Array(3);
-			pesamatrix[0] = new Array(1);
-			pesamatrix[1] = new Array(2);
-			pesamatrix[2] = new Array(1);
-			for(i=0;i<pesamatrix.length;i++){
-				for(j=0;j<pesamatrix[i].length;j++){
-					pesamatrix[i][j]=true;
+			figura = new Array(3);
+			figura[0] = new Array(1);
+			figura[1] = new Array(2);
+			figura[2] = new Array(1);
+			for(i=0;i<figura.length;i++){
+				for(j=0;j<figura[i].length;j++){
+					figura[i][j]=true;
 				}
 			}
 			break;
 			
 		case ("TAmunt"):
 			Debug.Log("És la TAmunt");
-			pesamatrix = new Array(2);
-			pesamatrix[0] = new Array(3);
-			pesamatrix[1] = new Array(3);
-			for(i=0;i<pesamatrix.length;i++){
-				for(j=0;j<pesamatrix[i].length;j++){
+			figura = new Array(2);
+			figura[0] = new Array(3);
+			figura[1] = new Array(3);
+			for(i=0;i<figura.length;i++){
+				for(j=0;j<figura[i].length;j++){
 					if(i==0 && (j==0 || j==2))
-						pesamatrix[i][j]=false;
+						figura[i][j]=false;
 					else
-						pesamatrix[i][j]=true;
+						figura[i][j]=true;
 				}
 			}
 			break;
 			
 		case ("Z"):
 			Debug.Log("És la Z");
-			pesamatrix = new Array(2);
-			pesamatrix[0] = new Array(2);
-			pesamatrix[1] = new Array(3);
-			for(i=0;i<pesamatrix.length;i++){
-				for(j=0;j<pesamatrix[i].length;j++){
+			figura = new Array(2);
+			figura[0] = new Array(2);
+			figura[1] = new Array(3);
+			for(i=0;i<figura.length;i++){
+				for(j=0;j<figura[i].length;j++){
 					if(i==1 && j==0)
-						pesamatrix[i][j]=false;
+						figura[i][j]=false;
 					else
-						pesamatrix[i][j]=true;
+						figura[i][j]=true;
 				}
 			}
 			break;
 			
 		case ("ZVertical"):
 			Debug.Log("És la ZVertical");
-			pesamatrix = new Array(3);
-			pesamatrix[0] = new Array(2);
-			pesamatrix[1] = new Array(2);
-			pesamatrix[2] = new Array(1);
+			figura = new Array(3);
+			figura[0] = new Array(2);
+			figura[1] = new Array(2);
+			figura[2] = new Array(1);
 			
-			for(i=0;i<pesamatrix.length;i++){
-				for(j=0;j<pesamatrix[i].length;j++){
+			for(i=0;i<figura.length;i++){
+				for(j=0;j<figura[i].length;j++){
 					if(i==0 && j==0)
-						pesamatrix[i][j]=false;
+						figura[i][j]=false;
 					else
-						pesamatrix[i][j]=true;
+						figura[i][j]=true;
 				}
 			}
 			break;
 			
 		case ("ZInvertidaVertical"):
 			Debug.Log("És la ZInvertidaVertical");
-			pesamatrix = new Array(3);
-			pesamatrix[0] = new Array(1);
-			pesamatrix[1] = new Array(2);
-			pesamatrix[2] = new Array(2);
-			for(i=0;i<pesamatrix.length;i++){
-				for(j=0;j<pesamatrix[i].length;j++){
+			figura = new Array(3);
+			figura[0] = new Array(1);
+			figura[1] = new Array(2);
+			figura[2] = new Array(2);
+			for(i=0;i<figura.length;i++){
+				for(j=0;j<figura[i].length;j++){
 					if(i==2 && j==0)
-						pesamatrix[i][j]=false;
+						figura[i][j]=false;
 					else
-						pesamatrix[i][j]=true;
+						figura[i][j]=true;
 				}
 			}
 			break;
 			
 		case ("ZInvertida"):
 			Debug.Log("És la ZInvertida");
-			pesamatrix = new Array(2);
-			pesamatrix[0] = new Array(3);
-			pesamatrix[1] = new Array(2);
-			for(i=0;i<pesamatrix.length;i++){
-				for(j=0;j<pesamatrix[i].length;j++){
+			figura = new Array(2);
+			figura[0] = new Array(3);
+			figura[1] = new Array(2);
+			for(i=0;i<figura.length;i++){
+				for(j=0;j<figura[i].length;j++){
 					if(i==0 && j==0)
-						pesamatrix[i][j]=false;
+						figura[i][j]=false;
 					else
-						pesamatrix[i][j]=true;
+						figura[i][j]=true;
 				}
 			}
 			break;
 			
 	}
-	return pesamatrix;
+	return figura;
 }
 
 function colocarElement(matriuZona:Array, matriuNouElement:Array, posY:int, posX:int)
@@ -445,6 +471,17 @@ function OnGUI () {
     }    
 }
 
+function GenerateHashMap(){
+	boolmatrix = new Array(width);
+	for(var i=0;i<boolmatrix.length;i++){
+		boolmatrix[i]=new Array(height);
+	}
+	for(i=0;i<boolmatrix.length;i++){
+		for(var j=0;j<boolmatrix[i].length;j++){
+			boolmatrix[i][j]=false;
+		}
+	}
+}
 
 function GenerateTiles(hit : RaycastHit){
 	// Set Tiles
