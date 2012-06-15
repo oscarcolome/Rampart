@@ -13,6 +13,6 @@ function Update () {
 		//Es mou l'objecte des del punt de sortida fins al punt d'arribada, amb la velocitat indicada
 		//La velocitat es calcula dividint el temps per la distància que queda.
 		//Així es fa consant.
-    	transform.position = Vector3.Lerp (startPoint.position, endPoint.position,Time.deltaTime* 15/distance);
+    	transform.position = Vector3.Lerp (startPoint.position, endPoint.position,Time.deltaTime* 3/distance);
 	}
 }
