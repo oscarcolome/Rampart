@@ -11,3 +11,9 @@ function Update () {
 		Destroy(gameObject);
 	}
 }
+
+function OnCollisionEnter(hit : Collision){
+	if(hit.collider.tag == "Bot"){
+		Destroy(gameObject);	
+	}
+}
