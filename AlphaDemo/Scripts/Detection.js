@@ -14,7 +14,8 @@ private var range = 30;
 private var distance;
 
 function Start(){
-	othertargets = GameObject.FindGameObjectsWithTag("Bot");	
+	othertargets = GameObject.FindGameObjectsWithTag("Bot");
+	shot=cannon.FindChild("ShootPoint");
 }
 
 function Update(){
