@@ -4,9 +4,17 @@ var waypoints : GameObject[];
 var startPoint : Transform;
 //Punt d'arribada
 var endPoint : Transform;
+var last : int;
+var count: int;
+var targets: boolean;
 
 function Start(){
-	waypoints = GameObject.FindGameObjectsWithTag("Turret");	
+	//waypoints = GameObject.FindGameObjectsWithTag("Wall");
+	//if(waypoints == null)
+		waypoints = GameObject.FindGameObjectsWithTag("Turret");
+		targets=true;
+		count = waypoints.Length;
+		endPoint=waypoints[Random.Range(0,waypoints.length)].transform;	
 }
 
 function Update () {
@@ -21,7 +29,13 @@ function Update () {
 			//Així es fa consant.
     		transform.position = Vector3.Lerp (startPoint.position, endPoint.position,Time.deltaTime* 3/distance);
 		}else if(distance == 0){
-			findWayPoint();
+			Destroy(endPoint.gameObject);
+			count = count -1;
+			/*if(targets){
+				transform.Translate(Vector3.zero);
+			}else{
+				findWayPoint();
+			}*/
 		}
 	}else{
 		//transform.Translate(Vector3.forward* Time.deltaTime* 2);
@@ -31,7 +45,16 @@ function Update () {
 }
 
 function findWayPoint(){
-	endPoint = waypoints[Random.Range(0,waypoints.length)].transform;
+	for(i=0;i<waypoints.Length;i++){
+		if(waypoints[i] != null){
+			endPoint = waypoints[i].transform;	
+		}else{
+			if(count == 0){
+				targets=false;	
+			}
+		}
+	}
+	
 }
 
 function OnCollisionEnter(hit : Collision){

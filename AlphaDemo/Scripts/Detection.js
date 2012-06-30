@@ -33,7 +33,7 @@ function OnTriggerEnter(coll: Collider){
 	//Si es detecta un objecte amb l'etiqueta "Bot"
 	if(target == null && coll.tag == "Bot"){
 		target=coll.gameObject.transform;
-			
+
 	}else if (target != null && coll.tag == "Bot"){
 		queued=false;
 		var i=0;
@@ -51,7 +51,7 @@ function OnTriggerStay(coll: Collider){
 	if(target == null && coll.tag == "Bot"){
 		var i=0;
 		while(target == null && i<othertargets.Length) {
-			if (othertargets[i] != null){
+			if (othertargets[i] != null && transform.collider.bounds.Contains(othertargets[i].transform.position)){
 				target=othertargets[i].transform;
 			}
 			i++;

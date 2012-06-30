@@ -6,15 +6,13 @@ var yieldTimeMax = 5;  // Don't exceed this amount of time between spawning enem
 
 function Start()
 {
-    Spawn();
-}
-
-function Spawn() 
-{ 
    for (var i=0; i<amountEnemies; i++) // How many enemies to instantiate total.
    {
       yield WaitForSeconds(Random.Range(yieldTimeMin, yieldTimeMax));  // How long to wait before another enemy is instantiated.
       var pos: Transform = spawnPoints[Random.Range(0, spawnPoints.length)];  // Randomize the spawnPoints to instantiate enemy at next.
       Instantiate(enemyPrefab, pos.position, pos.rotation); 
-   } 
+   }
 }
+
+
+    

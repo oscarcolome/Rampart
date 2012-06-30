@@ -9,7 +9,7 @@ private var roundedRestSeconds : int;
 private var screenPos;
 private var ray : Ray;
 private var hit : RaycastHit;
-private var vista_previa : boolean;
+
 
 private var preview : Rigidbody;
 private var solid : Rigidbody;
@@ -23,12 +23,16 @@ var countDownSeconds : int;
 private var xgrid:int;
 private var zgrid:int;
 
-var cubes : Rigidbody[];
 private var gridList =new ArrayList();
+var cubes : Rigidbody[];
 var tile : Transform;
 var width : int;
 var height : int;
-static var creat = false;
+var terreny : Terrain;
+
+private var vista_previa : boolean;
+private var creat = false;
+
 
 
 //Colocar el contorn de la muralla.
@@ -37,57 +41,56 @@ function Update(){
 	//es comprova el temps, si encara queda temps
 	//es poden posar cubs
 	//si el temps es 0 s'han de canviar les textures dels cubs per parets 
-	screenPos = Input.mousePosition;
-	ray = Camera.main.ScreenPointToRay(screenPos);
-	
-	if(Input.GetButtonDown("Fire1")){
-		
-		if(Physics.Raycast(ray,hit)){
-			Debug.Log("I hit at: x: "+hit.point.x+" y: "+hit.point.y+" z: "+hit.point.z);
-			hit.point.x = Mathf.Round(hit.point.x);
-			hit.point.y = Mathf.Round(hit.point.y);
-			hit.point.z = Mathf.Round(hit.point.z);
-			if(!creat){
-				GenerateTiles(hit);
-				GenerateHashMap();	
-			}else{
-				 if((hit.collider.tag == "Plane")||(hit.collider.tag == "Untagged")){
-				
-					figura=ComprovarElement(preview);
-				
-					if(colocarElement(boolmatrix,figura,(zgrid-hit.point.z),(hit.point.x-xgrid))){
-						solid=DestroyPreview();
-						var muralla : Rigidbody = Instantiate(solid,Vector3(hit.point.x,1,hit.point.z), transform.rotation); 
-						cubesPlaced.Add(muralla);
-					}
+	if(restSeconds > 0){
+		screenPos = Input.mousePosition;
+		ray = Camera.main.ScreenPointToRay(screenPos);
+		if(Input.GetButtonDown("Fire1")){
+			if(Physics.Raycast(ray,hit)){
+				Debug.Log("I hit at: x: "+hit.point.x+" y: "+hit.point.y+" z: "+hit.point.z);
+				hit.point.x = Mathf.Round(hit.point.x);
+				hit.point.y = Mathf.Round(hit.point.y);
+				hit.point.z = Mathf.Round(hit.point.z);
+				if(!creat){
+					GenerateTiles(hit);
+					GenerateHashMap();
+					//terreny.Destroy(terreny);
 				}else{
+					 //if((hit.collider.tag == "Plane")||(hit.collider.tag == "Untagged")){
 				
-					Debug.Log("Tag del que he clicat "+hit.collider.tag);
-				}	
+						figura=ComprovarElement(preview);
+				
+						if(colocarElement(boolmatrix,figura,(zgrid-hit.point.z),(hit.point.x-xgrid))){
+							solid=DestroyPreview();
+							var muralla : Rigidbody = Instantiate(solid,Vector3(hit.point.x,1,hit.point.z), transform.rotation); 
+							cubesPlaced.Add(muralla);
+						}
+					//}	
+				}
+			}
+		}else{
+			if(Physics.Raycast(ray,hit)){
+				if(!vista_previa)
+					CreatePreview(hit);
+				else
+					MovePreview(hit);	
 			}
 		}
 	}else{
-		if(Physics.Raycast(ray,hit)){
-			if(!vista_previa){
-				CreatePreview(hit);
-			}else{
-				MovePreview(hit);
-			}	
-		}
+		if(preview != null)
+			DestroyPreview();
+		ConvertirMuralla();
 	}
 }
 
 function CreatePreview(hit:RaycastHit){
 	solid = cubes[Random.Range(0,cubes.length)];
 	preview = Instantiate(solid,Vector3(hit.point.x,1,hit.point.z), transform.rotation);
-	vista_previa=true; 
-	
+	vista_previa=true;
 }
 
 function MovePreview(hit:RaycastHit){
     preview.transform.position = hit.transform.position;
 }
-
 
 function DestroyPreview(){
 	Destroy(preview.gameObject);
@@ -95,9 +98,16 @@ function DestroyPreview(){
 	return solid;
 }
 
-
 //Hashtable amb clau Vector3 per indexar les taules.
 //Hashmap 
+
+function ConvertirMuralla(){
+	var cubes : Rigidbody;
+	for(cubes in cubesPlaced){
+		Debug.Log(cubes.tag);
+		cubes.transform.tag = "Wall";
+	}
+}
 
 function ComprovarElement(element:Rigidbody){
 	switch (element.tag){
@@ -436,17 +446,20 @@ function OnGUI () {
     displayMinutes = roundedRestSeconds / 60; 
 	var text : String;
 	//format del comptador
-    text = String.Format ("{0:00}:{1:00}", displayMinutes, displaySeconds);
+	
+    text = String.Format ("Fase 1 Temps restant: {0:00}:{1:00}", displayMinutes, displaySeconds);
     
     //display messages or whatever here -->do stuff based on your timer
     if (restSeconds == 10) {
     	//diferents missatges segons el temps que queda
-        GUI.Label (Rect (400, 35, 100, 40), "Ten Seconds Left");
+        GUI.Label (Rect (100, 10, 300, 40), "Ten Seconds Left");
     }else if (restSeconds == 0) {
-        GUI.Label (Rect (400, 35, 100, 40), "Time is Over");
+        GUI.Label (Rect (100, 10, 300, 40), "Time is Over");
+        Game.fase1 = true;
+        Game.fase2 = false;
         //do stuff here
     }else {
-    	GUI.Label (Rect (400, 35, 100, 40), text);
+    	GUI.Label (Rect (100, 10, 300, 40), text);
     }    
 }
 
