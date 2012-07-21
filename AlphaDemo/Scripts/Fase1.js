@@ -2,7 +2,6 @@
 private var restSeconds : int;
 private var displaySeconds : int;
 private var displayMinutes : int;
-private var startTime : int;
 private var roundedRestSeconds : int;
 
 
@@ -25,6 +24,7 @@ private var zgrid:int;
 
 private var gridList =new ArrayList();
 var cubes : Rigidbody[];
+var tower : Rigidbody;
 var tile : Transform;
 var width : int;
 var height : int;
@@ -32,6 +32,8 @@ var terreny : Terrain;
 
 private var vista_previa : boolean;
 private var creat = false;
+private var towerFaseEnd =false;
+private var towerFaseStart=false;
 
 
 
@@ -40,13 +42,14 @@ function Update(){
 	//com que la funcio update s'executa a cada frame
 	//es comprova el temps, si encara queda temps
 	//es poden posar cubs
-	//si el temps es 0 s'han de canviar les textures dels cubs per parets 
+	//si el temps es 0 s'han de canviar les textures dels cubs per paret
+	
 	if(restSeconds > 0){
 		screenPos = Input.mousePosition;
 		ray = Camera.main.ScreenPointToRay(screenPos);
 		if(Input.GetButtonDown("Fire1")){
 			if(Physics.Raycast(ray,hit)){
-				Debug.Log("I hit at: x: "+hit.point.x+" y: "+hit.point.y+" z: "+hit.point.z);
+				//Debug.Log("I hit at: x: "+hit.point.x+" y: "+hit.point.y+" z: "+hit.point.z);
 				hit.point.x = Mathf.Round(hit.point.x);
 				hit.point.y = Mathf.Round(hit.point.y);
 				hit.point.z = Mathf.Round(hit.point.z);
@@ -83,7 +86,11 @@ function Update(){
 }
 
 function CreatePreview(hit:RaycastHit){
-	solid = cubes[Random.Range(0,cubes.length)];
+	if(!towerFaseStart){
+		solid = cubes[Random.Range(0,cubes.length)];		
+	}else{
+		solid = tower;
+	}
 	preview = Instantiate(solid,Vector3(hit.point.x,1,hit.point.z), transform.rotation);
 	vista_previa=true;
 }
@@ -102,15 +109,17 @@ function DestroyPreview(){
 //Hashmap 
 
 function ConvertirMuralla(){
-	var cubes : Rigidbody;
-	for(cubes in cubesPlaced){
-		Debug.Log(cubes.tag);
-		cubes.transform.tag = "Wall";
+	var peces : Rigidbody;
+	for(peces in cubesPlaced){
+		//Debug.Log(peces.tag);
+		peces.transform.tag = "Wall";
 	}
 }
 
 function ComprovarElement(element:Rigidbody){
 	switch (element.tag){
+		case ("Turret"):
+				
 		case ("Cub"):
 			Debug.Log("És el Cub");
 			figura = new Array(2);
@@ -124,7 +133,7 @@ function ComprovarElement(element:Rigidbody){
 			break;
 	
 		case ("IHoritzontal"):
-			Debug.Log("És la IHoritzontal");
+			//Debug.Log("És la IHoritzontal");
 			figura = new Array(1);
 			figura[0] = new Array(4);
 			for(i=0;i<figura.length;i++){
@@ -135,7 +144,7 @@ function ComprovarElement(element:Rigidbody){
 			break;
 		
 		case ("IVertical"):
-			Debug.Log("És la IVertical");
+			//Debug.Log("És la IVertical");
 			figura = new Array(4);
 			for(i=0;i<figura.length;i++){
 				figura[i]=new Array(1);
@@ -148,7 +157,7 @@ function ComprovarElement(element:Rigidbody){
 			break;
 			
 		case ("L"):
-			Debug.Log("És la L");
+			//Debug.Log("És la L");
 			figura = new Array(3);
 			figura[0] = new Array(1);
 			figura[1] = new Array(1);
@@ -161,7 +170,7 @@ function ComprovarElement(element:Rigidbody){
 			break;
 			
 		case ("LGanxoHoritzontal"):
-			Debug.Log("És la LGanxoHoritzontal");
+			//Debug.Log("És la LGanxoHoritzontal");
 			figura = new Array(2);
 			figura[0] = new Array(3);
 			figura[1] = new Array(1);
@@ -174,7 +183,7 @@ function ComprovarElement(element:Rigidbody){
 			break;
 			
 		case ("LVertical"):
-			Debug.Log("És la LVertical");
+			//Debug.Log("És la LVertical");
 			figura = new Array(3);
 			for(i=0;i<figura.length;i++){
 				figura[i]=new Array(2);
@@ -191,7 +200,7 @@ function ComprovarElement(element:Rigidbody){
 			break;
 		
 		case ("LHoritzontal"):
-			Debug.Log("És la LHoritzontal");
+			//Debug.Log("És la LHoritzontal");
 			figura = new Array(2);
 			figura[0] = new Array(3);
 			figura[1] = new Array(3);
@@ -207,7 +216,7 @@ function ComprovarElement(element:Rigidbody){
 			break;
 			
 		case ("LInvertida"):
-			Debug.Log("És la LInvertida");
+			//Debug.Log("És la LInvertida");
 			figura = new Array(3);
 						
 			figura[0] = new Array(2);
@@ -226,7 +235,7 @@ function ComprovarElement(element:Rigidbody){
 		
 		
 		case ("LInvertidaHoritzontal"):
-			Debug.Log("És la LInvertidaHoritzontal");
+			//Debug.Log("És la LInvertidaHoritzontal");
 			figura = new Array(2);
 			figura[0] = new Array(1);
 			figura[1] = new Array(3);
@@ -241,7 +250,7 @@ function ComprovarElement(element:Rigidbody){
 			break;
 		
 		case ("LInvertidaGanxoVertical"):
-			Debug.Log("És la LGanxoVertical");
+			//Debug.Log("És la LGanxoVertical");
 			figura = new Array(3);
 			figura[0] = new Array(2);
 			figura[1] = new Array(1);
@@ -254,7 +263,7 @@ function ComprovarElement(element:Rigidbody){
 			break;
 			
 		case ("LInvertidaGanxoHoritzontal"):
-			Debug.Log("És la LInvertidaGanxoHoritzontal");
+			//Debug.Log("És la LInvertidaGanxoHoritzontal");
 			figura = new Array(2);
 			figura[0] = new Array(3);
 			figura[1] = new Array(3);
@@ -269,7 +278,7 @@ function ComprovarElement(element:Rigidbody){
 			break;
 		
 		case ("T"):
-			Debug.Log("És la T");
+			//Debug.Log("És la T");
 			figura = new Array(2);
 			figura[0] = new Array(3);
 			figura[1] = new Array(2);
@@ -284,7 +293,7 @@ function ComprovarElement(element:Rigidbody){
 			break;
 			
 		case ("TAmunt"):
-			Debug.Log("És la TAmunt");
+			//Debug.Log("És la TAmunt");
 			figura = new Array(2);
 			figura[0] = new Array(3);
 			figura[1] = new Array(3);
@@ -299,7 +308,7 @@ function ComprovarElement(element:Rigidbody){
 			break;
 			
 		case ("TVertical"):
-			Debug.Log("És la TVertical");
+			//Debug.Log("És la TVertical");
 			figura = new Array(3);
 			figura[0] = new Array(1);
 			figura[1] = new Array(2);
@@ -312,7 +321,7 @@ function ComprovarElement(element:Rigidbody){
 			break;
 			
 		case ("TVerticalInvertida"):
-			Debug.Log("És la TVerticalInvertida");
+			//Debug.Log("És la TVerticalInvertida");
 			figura = new Array(3);
 			for(i=0;i<figura.length;i++){
 				figura[i] = new Array(2);
@@ -328,7 +337,7 @@ function ComprovarElement(element:Rigidbody){
 			break;
 			
 		case ("Z"):
-			Debug.Log("És la Z");
+			//Debug.Log("És la Z");
 			figura = new Array(2);
 			figura[0] = new Array(2);
 			figura[1] = new Array(3);
@@ -343,7 +352,7 @@ function ComprovarElement(element:Rigidbody){
 			break;
 			
 		case ("ZVertical"):
-			Debug.Log("És la ZVertical");
+			//Debug.Log("És la ZVertical");
 			figura = new Array(3);
 			figura[0] = new Array(2);
 			figura[1] = new Array(2);
@@ -360,7 +369,7 @@ function ComprovarElement(element:Rigidbody){
 			break;
 			
 		case ("ZInvertidaVertical"):
-			Debug.Log("És la ZInvertidaVertical");
+			//Debug.Log("És la ZInvertidaVertical");
 			figura = new Array(3);
 			figura[0] = new Array(1);
 			figura[1] = new Array(2);
@@ -376,7 +385,7 @@ function ComprovarElement(element:Rigidbody){
 			break;
 			
 		case ("ZInvertida"):
-			Debug.Log("És la ZInvertida");
+			//Debug.Log("És la ZInvertida");
 			figura = new Array(2);
 			figura[0] = new Array(3);
 			figura[1] = new Array(2);
@@ -432,8 +441,8 @@ function OnGUI () {
     //make sure that your time is based on when this script was first called
     //instead of when your game started
     //es resta el temps (ni idea) del temps inicial
-   	var guiTime = Time.time - startTime;
-   	restSeconds = countDownSeconds - (guiTime);
+    
+   	restSeconds = countDownSeconds - (Time.time);
    	//quan el comptador arriba a 0, seguira calculant valors negatius
    	//la funcio max selecciona el maxim entre 0 i el valor del temps
    	//per mantenir el comptador a 0 quan baixi a -1,-2,-3...
@@ -446,21 +455,29 @@ function OnGUI () {
     displayMinutes = roundedRestSeconds / 60; 
 	var text : String;
 	//format del comptador
-	
-    text = String.Format ("Fase 1 Temps restant: {0:00}:{1:00}", displayMinutes, displaySeconds);
-    
+	if(towerFaseStart)
+    	text = String.Format ("Torres: Temps restant: {0:00}:{1:00}", displayMinutes, displaySeconds);
+    else
+    	text = String.Format ("Enmurallar: Temps restant: {0:00}:{1:00}", displayMinutes, displaySeconds);
     //display messages or whatever here -->do stuff based on your timer
     if (restSeconds == 10) {
     	//diferents missatges segons el temps que queda
-        GUI.Label (Rect (100, 10, 300, 40), "Ten Seconds Left");
-    }else if (restSeconds == 0) {
-        GUI.Label (Rect (100, 10, 300, 40), "Time is Over");
-        Game.fase1 = true;
-        Game.fase2 = false;
+        GUI.Label (Rect (100, 10, 300, 40), "Ten Seconds Left!!");
+    }else if (restSeconds == 0 && !towerFaseStart) {
+        GUI.Label (Rect (100, 10, 300, 40), "Now place Towers!!");
+        countDownSeconds=countDownSeconds*2;
+        towerFaseStart=true;
+        
         //do stuff here
+    }else if (restSeconds == 0 && towerFaseStart){
+    	towerFaseEnd = true;
+    	Game.fase1 = true;
+        Game.fase2 = false;
+        GUI.Label (Rect (100, 10, 300, 40), "Watch the battle");
     }else {
-    	GUI.Label (Rect (100, 10, 300, 40), text);
-    }    
+    	GUI.Label (Rect (100, 10, 300, 40), text);	
+    } 
+       
 }
 
 function GenerateHashMap(){

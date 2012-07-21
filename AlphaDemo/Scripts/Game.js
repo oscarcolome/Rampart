@@ -1,6 +1,7 @@
 #pragma strict
 
 static var fase1 : boolean = false;
+static var postfase1 :boolean =false;
 static var fase2 : boolean = false;
 static var fase3 : boolean = false;
 private var phaseone : Fase1 = null;

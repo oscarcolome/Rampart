@@ -11,7 +11,7 @@ var targets: boolean;
 function Start(){
 	//waypoints = GameObject.FindGameObjectsWithTag("Wall");
 	//if(waypoints == null)
-		waypoints = GameObject.FindGameObjectsWithTag("Turret");
+		waypoints = GameObject.FindGameObjectsWithTag("Wall");
 		targets=true;
 		count = waypoints.Length;
 		endPoint=waypoints[Random.Range(0,waypoints.length)].transform;	
