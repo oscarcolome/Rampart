@@ -18,13 +18,13 @@ function Start () {
 }
 
 function GenerateCastle(){
-	var stoney = castle.Find("Fortress");
+	
 	var posx=Random.Range(10,width);
 	var posz=Random.Range(10,height);
 	
 	//fortLimit = Random.Range(2,3);
 	//for(var h=0;h<fortLimit;h++){		
-		Instantiate(castle,	Vector3(posx,(stoney.localScale.y/2),posz),transform.rotation);
+		Instantiate(castle,	Vector3(posx,(castle.localScale.y/2),posz),transform.rotation);
 	//}
 	
 	//Instantiate(castle,Vector3((width/2),(stone.localScale.y/2),(height/2)),transform.rotation);

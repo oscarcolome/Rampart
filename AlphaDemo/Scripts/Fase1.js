@@ -39,7 +39,7 @@ private var stone : Transform;
 
 function Start(){
 	GenerateHashMap();
-	castle=GameObject.FindGameObjectWithTag("Fortress");
+	castle=GameObject.FindGameObjectWithTag("Fortress");	
 	MarkCastle();		
 }
 
@@ -118,7 +118,7 @@ function GenerateHashMap(){
 	}		
 }
 function MarkCastle(){
-	stone=castle.transform.FindChild("Fortress");
+	stone = castle.transform;	
 	var xgridless : int = stone.position.x - (stone.localScale.x/2);
 	var zgridless : int = stone.position.z - (stone.localScale.z/2);
 	var xgridmore : int = stone.position.x + (stone.localScale.x/2);
@@ -129,10 +129,15 @@ function MarkCastle(){
 	xgridmore = Mathf.Round(xgridmore);
 	zgridmore = Mathf.Round(zgridmore);
 	
-	for(var x=xgridless; x<xgridmore;x++){		
-		for(var z=zgridless; z<zgridmore;z++){		
-			boolmatrix[x][z] = true;
-			//Debug.Log("Marco la posicio "+x+" i "+z+" amb el valor "+boolmatrix[x][z]);			
+	Debug.Log("Value of xgridless "+xgridless);	
+	Debug.Log("Value of zgridless "+zgridless);	
+	Debug.Log("Value of xgridmore "+xgridmore);	
+	Debug.Log("Value of zgridmore "+zgridmore);	
+	
+	for(var x=xgridless; x<xgridmore+1;x++){		
+		for(var z=zgridless; z<zgridmore+1;z++){	
+			//Debug.Log("Value of x "+x+" z "+z);	
+			boolmatrix[x][z] = 1;			
 		}
 	}
 }
