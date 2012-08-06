@@ -1,35 +1,60 @@
-#pragma strict
-/*var gridList = new ArrayList();
+var castle :Transform;	
+var gridList = new ArrayList();
 var tile : Transform;
-var width : int;
-var height : int;
+var width : int = 100;
+var height : int = 100;
 static var creat = false;
+static var terrainwidth : int;
+static var terrainheight : int;
 
-function Update () {
 
-	if(Input.GetButtonDown("Fire1") && (!creat)){
-		var screenPos = Input.mousePosition;
-		var ray = camera.ScreenPointToRay(screenPos);
-		var hit : RaycastHit;
-		if(Physics.Raycast(ray,hit)){
-			GenerateTiles(hit);
-		}
-	}
 
+function Start () {
+
+	GenerateTiles();	
+	GenerateCastle();
+	Game.startingphase=true;
+	
 }
 
-function GenerateTiles(hit : RaycastHit){
+function GenerateCastle(){
+	var stoney = castle.Find("Fortress");
+	var posx=Random.Range(10,width);
+	var posz=Random.Range(10,height);
+	
+	//fortLimit = Random.Range(2,3);
+	//for(var h=0;h<fortLimit;h++){		
+		Instantiate(castle,	Vector3(posx,(stoney.localScale.y/2),posz),transform.rotation);
+	//}
+	
+	//Instantiate(castle,Vector3((width/2),(stone.localScale.y/2),(height/2)),transform.rotation);
+	
+}
+
+
+
+function GenerateTiles(){
 	// Set Tiles
-	//var xhit = (hit.point.x);
-	//var zhit = (hit.point.z);
-	var xhit = Mathf.Round(hit.point.x);
-	var zhit = Mathf.Round(hit.point.z);
-	for(var x = (xhit -((width-1)/2)); x < (xhit+(width/2)); x++){
-		for(var z = (zhit-((height-1)/2)); z < (zhit+(height/2)); z++){
+//	xgrid = hit.point.x -((width)/2);
+//	zgrid = hit.point.z +(height/2);
+//	for(var x = (hit.point.x -((width-1)/2)); x < (hit.point.x+(width/2)); x++){
+//		for(var z = (hit.point.z-((height-1)/2)); z < (hit.point.z+(height/2)); z++){
+//			var tiler = Instantiate(tile,Vector3(x,0,z),Quaternion.identity);
+//			gridList.Add(tiler);
+//			tiler.name = "Tile ("+x+","+z+")";
+//		}
+//	}
+	
+	for(var x = 0; x < width ; x++){
+		for(var z = 0; z < height; z++){
+			//Debug.Log("valor de x "+x+" i z "+z);
 			var tiler = Instantiate(tile,Vector3(x,0,z),Quaternion.identity);
 			gridList.Add(tiler);
 			tiler.name = "Tile ("+x+","+z+")";
 		}
 	}
+	terrainwidth = width;
+	terrainheight = height;
+	
 	creat=true;
-}*/
+}

@@ -26,16 +26,22 @@ private var gridList =new ArrayList();
 var cubes : Rigidbody[];
 var tower : Rigidbody;
 var tile : Transform;
-var width : int;
-var height : int;
+//var width : int;
+//var height : int;
 var terreny : Terrain;
 
 private var vista_previa : boolean;
 private var creat = false;
 private var towerFaseEnd =false;
 private var towerFaseStart=false;
+private var castle : GameObject;
+private var stone : Transform;
 
-
+function Start(){
+	GenerateHashMap();
+	castle=GameObject.FindGameObjectWithTag("Fortress");
+	MarkCastle();		
+}
 
 //Colocar el contorn de la muralla.
 function Update(){
@@ -53,22 +59,15 @@ function Update(){
 				hit.point.x = Mathf.Round(hit.point.x);
 				hit.point.y = Mathf.Round(hit.point.y);
 				hit.point.z = Mathf.Round(hit.point.z);
-				if(!creat){
-					GenerateTiles(hit);
-					GenerateHashMap();
-					//terreny.Destroy(terreny);
-				}else{
-					 //if((hit.collider.tag == "Plane")||(hit.collider.tag == "Untagged")){
 				
-						figura=ComprovarElement(preview);
+				figura=ComprovarElement(preview);
 				
-						if(colocarElement(boolmatrix,figura,(zgrid-hit.point.z),(hit.point.x-xgrid))){
-							solid=DestroyPreview();
-							var muralla : Rigidbody = Instantiate(solid,Vector3(hit.point.x,1,hit.point.z), transform.rotation); 
-							cubesPlaced.Add(muralla);
-						}
+					if(colocarElement(boolmatrix,figura,(GridGenerator.terrainheight-hit.point.z),(hit.point.x))){
+						solid=DestroyPreview();
+						var muralla : Rigidbody = Instantiate(solid,Vector3(hit.point.x,1,hit.point.z), transform.rotation); 
+						cubesPlaced.Add(muralla);
+					}
 					//}	
-				}
 			}
 		}else{
 			if(Physics.Raycast(ray,hit)){
@@ -105,8 +104,38 @@ function DestroyPreview(){
 	return solid;
 }
 
-//Hashtable amb clau Vector3 per indexar les taules.
-//Hashmap 
+
+function GenerateHashMap(){
+	
+	boolmatrix = new Array(GridGenerator.terrainwidth);
+	for(var i=0;i<boolmatrix.length;i++){
+		boolmatrix[i]=new Array(GridGenerator.terrainheight);
+	}
+	for(i=0;i<boolmatrix.length;i++){
+		for(var j=0;j<boolmatrix[i].length;j++){
+			boolmatrix[i][j]=0;
+		}
+	}		
+}
+function MarkCastle(){
+	stone=castle.transform.FindChild("Fortress");
+	var xgridless : int = stone.position.x - (stone.localScale.x/2);
+	var zgridless : int = stone.position.z - (stone.localScale.z/2);
+	var xgridmore : int = stone.position.x + (stone.localScale.x/2);
+	var zgridmore : int = stone.position.z + (stone.localScale.z/2);
+	
+	xgridless = Mathf.Round(xgridless);
+	zgridless = Mathf.Round(zgridless);
+	xgridmore = Mathf.Round(xgridmore);
+	zgridmore = Mathf.Round(zgridmore);
+	
+	for(var x=xgridless; x<xgridmore;x++){		
+		for(var z=zgridless; z<zgridmore;z++){		
+			boolmatrix[x][z] = true;
+			//Debug.Log("Marco la posicio "+x+" i "+z+" amb el valor "+boolmatrix[x][z]);			
+		}
+	}
+}
 
 function ConvertirMuralla(){
 	var peces : Rigidbody;
@@ -116,9 +145,10 @@ function ConvertirMuralla(){
 	}
 }
 
+
 function ComprovarElement(element:Rigidbody){
 	switch (element.tag){
-		case ("Turret"):
+		//case ("Turret"):
 				
 		case ("Cub"):
 			Debug.Log("És el Cub");
@@ -133,7 +163,7 @@ function ComprovarElement(element:Rigidbody){
 			break;
 	
 		case ("IHoritzontal"):
-			//Debug.Log("És la IHoritzontal");
+			Debug.Log("És la IHoritzontal");
 			figura = new Array(1);
 			figura[0] = new Array(4);
 			for(i=0;i<figura.length;i++){
@@ -144,7 +174,7 @@ function ComprovarElement(element:Rigidbody){
 			break;
 		
 		case ("IVertical"):
-			//Debug.Log("És la IVertical");
+			Debug.Log("És la IVertical");
 			figura = new Array(4);
 			for(i=0;i<figura.length;i++){
 				figura[i]=new Array(1);
@@ -157,7 +187,7 @@ function ComprovarElement(element:Rigidbody){
 			break;
 			
 		case ("L"):
-			//Debug.Log("És la L");
+			Debug.Log("És la L");
 			figura = new Array(3);
 			figura[0] = new Array(1);
 			figura[1] = new Array(1);
@@ -170,7 +200,7 @@ function ComprovarElement(element:Rigidbody){
 			break;
 			
 		case ("LGanxoHoritzontal"):
-			//Debug.Log("És la LGanxoHoritzontal");
+			Debug.Log("És la LGanxoHoritzontal");
 			figura = new Array(2);
 			figura[0] = new Array(3);
 			figura[1] = new Array(1);
@@ -183,7 +213,7 @@ function ComprovarElement(element:Rigidbody){
 			break;
 			
 		case ("LVertical"):
-			//Debug.Log("És la LVertical");
+			Debug.Log("És la LVertical");
 			figura = new Array(3);
 			for(i=0;i<figura.length;i++){
 				figura[i]=new Array(2);
@@ -200,7 +230,7 @@ function ComprovarElement(element:Rigidbody){
 			break;
 		
 		case ("LHoritzontal"):
-			//Debug.Log("És la LHoritzontal");
+			Debug.Log("És la LHoritzontal");
 			figura = new Array(2);
 			figura[0] = new Array(3);
 			figura[1] = new Array(3);
@@ -216,7 +246,7 @@ function ComprovarElement(element:Rigidbody){
 			break;
 			
 		case ("LInvertida"):
-			//Debug.Log("És la LInvertida");
+			Debug.Log("És la LInvertida");
 			figura = new Array(3);
 						
 			figura[0] = new Array(2);
@@ -235,7 +265,7 @@ function ComprovarElement(element:Rigidbody){
 		
 		
 		case ("LInvertidaHoritzontal"):
-			//Debug.Log("És la LInvertidaHoritzontal");
+			Debug.Log("És la LInvertidaHoritzontal");
 			figura = new Array(2);
 			figura[0] = new Array(1);
 			figura[1] = new Array(3);
@@ -250,7 +280,7 @@ function ComprovarElement(element:Rigidbody){
 			break;
 		
 		case ("LInvertidaGanxoVertical"):
-			//Debug.Log("És la LGanxoVertical");
+			Debug.Log("És la LGanxoVertical");
 			figura = new Array(3);
 			figura[0] = new Array(2);
 			figura[1] = new Array(1);
@@ -263,7 +293,7 @@ function ComprovarElement(element:Rigidbody){
 			break;
 			
 		case ("LInvertidaGanxoHoritzontal"):
-			//Debug.Log("És la LInvertidaGanxoHoritzontal");
+			Debug.Log("És la LInvertidaGanxoHoritzontal");
 			figura = new Array(2);
 			figura[0] = new Array(3);
 			figura[1] = new Array(3);
@@ -278,7 +308,7 @@ function ComprovarElement(element:Rigidbody){
 			break;
 		
 		case ("T"):
-			//Debug.Log("És la T");
+			Debug.Log("És la T");
 			figura = new Array(2);
 			figura[0] = new Array(3);
 			figura[1] = new Array(2);
@@ -293,7 +323,7 @@ function ComprovarElement(element:Rigidbody){
 			break;
 			
 		case ("TAmunt"):
-			//Debug.Log("És la TAmunt");
+			Debug.Log("És la TAmunt");
 			figura = new Array(2);
 			figura[0] = new Array(3);
 			figura[1] = new Array(3);
@@ -308,7 +338,7 @@ function ComprovarElement(element:Rigidbody){
 			break;
 			
 		case ("TVertical"):
-			//Debug.Log("És la TVertical");
+			Debug.Log("És la TVertical");
 			figura = new Array(3);
 			figura[0] = new Array(1);
 			figura[1] = new Array(2);
@@ -321,7 +351,7 @@ function ComprovarElement(element:Rigidbody){
 			break;
 			
 		case ("TVerticalInvertida"):
-			//Debug.Log("És la TVerticalInvertida");
+			Debug.Log("És la TVerticalInvertida");
 			figura = new Array(3);
 			for(i=0;i<figura.length;i++){
 				figura[i] = new Array(2);
@@ -337,7 +367,7 @@ function ComprovarElement(element:Rigidbody){
 			break;
 			
 		case ("Z"):
-			//Debug.Log("És la Z");
+			Debug.Log("És la Z");
 			figura = new Array(2);
 			figura[0] = new Array(2);
 			figura[1] = new Array(3);
@@ -352,7 +382,7 @@ function ComprovarElement(element:Rigidbody){
 			break;
 			
 		case ("ZVertical"):
-			//Debug.Log("És la ZVertical");
+			Debug.Log("És la ZVertical");
 			figura = new Array(3);
 			figura[0] = new Array(2);
 			figura[1] = new Array(2);
@@ -369,7 +399,7 @@ function ComprovarElement(element:Rigidbody){
 			break;
 			
 		case ("ZInvertidaVertical"):
-			//Debug.Log("És la ZInvertidaVertical");
+			Debug.Log("És la ZInvertidaVertical");
 			figura = new Array(3);
 			figura[0] = new Array(1);
 			figura[1] = new Array(2);
@@ -385,7 +415,7 @@ function ComprovarElement(element:Rigidbody){
 			break;
 			
 		case ("ZInvertida"):
-			//Debug.Log("És la ZInvertida");
+			Debug.Log("És la ZInvertida");
 			figura = new Array(2);
 			figura[0] = new Array(3);
 			figura[1] = new Array(2);
@@ -416,7 +446,7 @@ function colocarElement(matriuZona:Array, matriuNouElement:Array, posY:int, posX
 				if((posY + i) < 0 || (posY + i) >= matriuZona.length || (posX + j) < 0 || (posX + j) >= matriuZona[0].length)
 					return false;
 					
-				else if(matriuZona[posY + i][posX + j] == true)
+				else if(matriuZona[posY + i][posX + j] == 1)
 					return false;
 			}
 		}
@@ -429,7 +459,7 @@ function colocarElement(matriuZona:Array, matriuNouElement:Array, posY:int, posX
 		{
 			if(matriuNouElement[i][j] == true)
 			{
-				matriuZona[posY + i][posX + j] = true;
+				matriuZona[posY + i][posX + j] = 1;
 			}
 		}
 	}
@@ -480,28 +510,18 @@ function OnGUI () {
        
 }
 
-function GenerateHashMap(){
-	boolmatrix = new Array(width);
-	for(var i=0;i<boolmatrix.length;i++){
-		boolmatrix[i]=new Array(height);
-	}
-	for(i=0;i<boolmatrix.length;i++){
-		for(var j=0;j<boolmatrix[i].length;j++){
-			boolmatrix[i][j]=false;
-		}
-	}
-}
 
-function GenerateTiles(hit : RaycastHit){
-	// Set Tiles
-	xgrid = hit.point.x -((width)/2);
-	zgrid = hit.point.z +(height/2);
-	for(var x = (hit.point.x -((width-1)/2)); x < (hit.point.x+(width/2)); x++){
-		for(var z = (hit.point.z-((height-1)/2)); z < (hit.point.z+(height/2)); z++){
-			var tiler = Instantiate(tile,Vector3(x,0,z),Quaternion.identity);
-			gridList.Add(tiler);
-			tiler.name = "Tile ("+x+","+z+")";
-		}
-	}
-	creat=true;
-}
+
+//function GenerateTiles(hit : RaycastHit){
+//	// Set Tiles
+//	xgrid = hit.point.x -((width)/2);
+//	zgrid = hit.point.z +(height/2);
+//	for(var x = (hit.point.x -((width-1)/2)); x < (hit.point.x+(width/2)); x++){
+//		for(var z = (hit.point.z-((height-1)/2)); z < (hit.point.z+(height/2)); z++){
+//			var tiler = Instantiate(tile,Vector3(x,0,z),Quaternion.identity);
+//			gridList.Add(tiler);
+//			tiler.name = "Tile ("+x+","+z+")";
+//		}
+//	}
+//	creat=true;
+//}
