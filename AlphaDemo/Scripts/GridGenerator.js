@@ -24,7 +24,7 @@ function GenerateCastle(){
 	
 	//fortLimit = Random.Range(2,3);
 	//for(var h=0;h<fortLimit;h++){		
-		Instantiate(castle,	Vector3(posx,(castle.localScale.y/2),posz),transform.rotation);
+		Instantiate(castle,	Vector3(posx,0,posz),transform.rotation);
 	//}
 	
 	//Instantiate(castle,Vector3((width/2),(stone.localScale.y/2),(height/2)),transform.rotation);
@@ -48,7 +48,7 @@ function GenerateTiles(){
 	for(var x = 0; x < width ; x++){
 		for(var z = 0; z < height; z++){
 			//Debug.Log("valor de x "+x+" i z "+z);
-			var tiler = Instantiate(tile,Vector3(x,0,z),Quaternion.identity);
+			var tiler = Instantiate(tile,Vector3(x,-1,z),Quaternion.identity);
 			gridList.Add(tiler);
 			tiler.name = "Tile ("+x+","+z+")";
 		}

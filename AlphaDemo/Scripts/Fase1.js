@@ -3,6 +3,7 @@ private var restSeconds : int;
 private var displaySeconds : int;
 private var displayMinutes : int;
 private var roundedRestSeconds : int;
+private var isred : boolean = false;
 
 
 private var screenPos;
@@ -37,9 +38,12 @@ private var towerFaseStart=false;
 private var castle : GameObject;
 private var stone : Transform;
 
+
+
 function Start(){
 	GenerateHashMap();
-	castle=GameObject.FindGameObjectWithTag("Fortress");	
+	castle=GameObject.FindGameObjectWithTag("Fortress");
+	//Debug.Log("Castle value "+castle);	
 	MarkCastle();		
 }
 
@@ -60,14 +64,23 @@ function Update(){
 				hit.point.y = Mathf.Round(hit.point.y);
 				hit.point.z = Mathf.Round(hit.point.z);
 				
-				figura=ComprovarElement(preview);
+				var children = preview.transform.childCount;
+				isred=false;
+				for(var c=0;c<children;c++){
+					if(preview.transform.GetChild(c).transform.renderer.material.color == Color.red)
+						isred=true;					
+				}
+				
+				if(!isred){
+				
+					figura=ComprovarElement(preview);
 				
 					if(colocarElement(boolmatrix,figura,(GridGenerator.terrainheight-hit.point.z),(hit.point.x))){
 						solid=DestroyPreview();
 						var muralla : Rigidbody = Instantiate(solid,Vector3(hit.point.x,1,hit.point.z), transform.rotation); 
 						cubesPlaced.Add(muralla);
 					}
-					//}	
+				}	
 			}
 		}else{
 			if(Physics.Raycast(ray,hit)){
@@ -153,7 +166,7 @@ function ConvertirMuralla(){
 
 function ComprovarElement(element:Rigidbody){
 	switch (element.tag){
-		//case ("Turret"):
+		case ("Turret"):
 				
 		case ("Cub"):
 			Debug.Log("És el Cub");
@@ -444,6 +457,8 @@ function colocarElement(matriuZona:Array, matriuNouElement:Array, posY:int, posX
 	{
 		for(var j = 0; j < matriuNouElement[i].length; j++)
 		{
+			//Debug.Log("Value of posY+i: "+(posY+i)+" posX+j "+(posX+j));
+			//Debug.Log("Value of matriuzona: "+matriuZona[posY+i][posX+j]);
 			// només es comprova els punts 'plens' del nou element
 			if(matriuNouElement[i][j] == true)
 			{
