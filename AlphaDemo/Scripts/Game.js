@@ -1,13 +1,15 @@
 #pragma strict
 
 static var fase1 : boolean = false;
+static var fortSuccess : boolean = false;
 static var postfase1 :boolean =false;
 static var fase2 : boolean = false;
 static var fase3 : boolean = false;
+static var startingphase : boolean = false;
 private var creation : GridGenerator = null;
 private var phaseone : Fase1 = null;
 private var phasetwo : Fase2 = null;
-static var startingphase : boolean = false;
+
 
 function Update () {
 

@@ -1,5 +1,5 @@
 
-private var restSeconds : int;
+private var restSeconds : int = 1;
 private var displaySeconds : int;
 private var displayMinutes : int;
 private var roundedRestSeconds : int;
@@ -37,8 +37,9 @@ private var towerFaseEnd =false;
 private var towerFaseStart=false;
 private var castle : GameObject;
 private var stone : Transform;
-
-
+private var hitwall : RaycastHit;
+private var yaxis = 50;
+private var steps = 0;
 
 function Start(){
 	GenerateHashMap();
@@ -77,7 +78,7 @@ function Update(){
 				
 					if(colocarElement(boolmatrix,figura,(GridGenerator.terrainheight-hit.point.z),(hit.point.x))){
 						solid=DestroyPreview();
-						var muralla : Rigidbody = Instantiate(solid,Vector3(hit.point.x,1,hit.point.z), transform.rotation); 
+						var muralla : Rigidbody = Instantiate(solid,Vector3(hit.point.x,0,hit.point.z), transform.rotation); 
 						cubesPlaced.Add(muralla);
 					}
 				}	
@@ -94,6 +95,7 @@ function Update(){
 		if(preview != null)
 			DestroyPreview();
 		ConvertirMuralla();
+		checkSafeZone(GameObject.Find("Tile ("+(castle.transform.position.x)+","+(castle.transform.position.z)+")").transform,Color.yellow);
 	}
 }
 
@@ -142,11 +144,6 @@ function MarkCastle(){
 	xgridmore = Mathf.Round(xgridmore);
 	zgridmore = Mathf.Round(zgridmore);
 	
-	Debug.Log("Value of xgridless "+xgridless);	
-	Debug.Log("Value of zgridless "+zgridless);	
-	Debug.Log("Value of xgridmore "+xgridmore);	
-	Debug.Log("Value of zgridmore "+zgridmore);	
-	
 	for(var x=xgridless; x<xgridmore+1;x++){		
 		for(var z=zgridless; z<zgridmore+1;z++){	
 			//Debug.Log("Value of x "+x+" z "+z);	
@@ -169,7 +166,7 @@ function ComprovarElement(element:Rigidbody){
 		case ("Turret"):
 				
 		case ("Cub"):
-			Debug.Log("És el Cub");
+			//Debug.Log("És el Cub");
 			figura = new Array(2);
 			figura[0] = new Array(2);
 			figura[1] = new Array(2);
@@ -181,7 +178,7 @@ function ComprovarElement(element:Rigidbody){
 			break;
 	
 		case ("IHoritzontal"):
-			Debug.Log("És la IHoritzontal");
+			//Debug.Log("És la IHoritzontal");
 			figura = new Array(1);
 			figura[0] = new Array(4);
 			for(i=0;i<figura.length;i++){
@@ -192,7 +189,7 @@ function ComprovarElement(element:Rigidbody){
 			break;
 		
 		case ("IVertical"):
-			Debug.Log("És la IVertical");
+			//Debug.Log("És la IVertical");
 			figura = new Array(4);
 			for(i=0;i<figura.length;i++){
 				figura[i]=new Array(1);
@@ -205,7 +202,7 @@ function ComprovarElement(element:Rigidbody){
 			break;
 			
 		case ("L"):
-			Debug.Log("És la L");
+			//Debug.Log("És la L");
 			figura = new Array(3);
 			figura[0] = new Array(1);
 			figura[1] = new Array(1);
@@ -218,7 +215,7 @@ function ComprovarElement(element:Rigidbody){
 			break;
 			
 		case ("LGanxoHoritzontal"):
-			Debug.Log("És la LGanxoHoritzontal");
+			//Debug.Log("És la LGanxoHoritzontal");
 			figura = new Array(2);
 			figura[0] = new Array(3);
 			figura[1] = new Array(1);
@@ -231,7 +228,7 @@ function ComprovarElement(element:Rigidbody){
 			break;
 			
 		case ("LVertical"):
-			Debug.Log("És la LVertical");
+			//Debug.Log("És la LVertical");
 			figura = new Array(3);
 			for(i=0;i<figura.length;i++){
 				figura[i]=new Array(2);
@@ -248,7 +245,7 @@ function ComprovarElement(element:Rigidbody){
 			break;
 		
 		case ("LHoritzontal"):
-			Debug.Log("És la LHoritzontal");
+			//Debug.Log("És la LHoritzontal");
 			figura = new Array(2);
 			figura[0] = new Array(3);
 			figura[1] = new Array(3);
@@ -264,7 +261,7 @@ function ComprovarElement(element:Rigidbody){
 			break;
 			
 		case ("LInvertida"):
-			Debug.Log("És la LInvertida");
+			//Debug.Log("És la LInvertida");
 			figura = new Array(3);
 						
 			figura[0] = new Array(2);
@@ -283,7 +280,7 @@ function ComprovarElement(element:Rigidbody){
 		
 		
 		case ("LInvertidaHoritzontal"):
-			Debug.Log("És la LInvertidaHoritzontal");
+			//Debug.Log("És la LInvertidaHoritzontal");
 			figura = new Array(2);
 			figura[0] = new Array(1);
 			figura[1] = new Array(3);
@@ -298,7 +295,7 @@ function ComprovarElement(element:Rigidbody){
 			break;
 		
 		case ("LInvertidaGanxoVertical"):
-			Debug.Log("És la LGanxoVertical");
+			//Debug.Log("És la LGanxoVertical");
 			figura = new Array(3);
 			figura[0] = new Array(2);
 			figura[1] = new Array(1);
@@ -311,7 +308,7 @@ function ComprovarElement(element:Rigidbody){
 			break;
 			
 		case ("LInvertidaGanxoHoritzontal"):
-			Debug.Log("És la LInvertidaGanxoHoritzontal");
+			//Debug.Log("És la LInvertidaGanxoHoritzontal");
 			figura = new Array(2);
 			figura[0] = new Array(3);
 			figura[1] = new Array(3);
@@ -326,7 +323,7 @@ function ComprovarElement(element:Rigidbody){
 			break;
 		
 		case ("T"):
-			Debug.Log("És la T");
+			//Debug.Log("És la T");
 			figura = new Array(2);
 			figura[0] = new Array(3);
 			figura[1] = new Array(2);
@@ -341,7 +338,7 @@ function ComprovarElement(element:Rigidbody){
 			break;
 			
 		case ("TAmunt"):
-			Debug.Log("És la TAmunt");
+			//Debug.Log("És la TAmunt");
 			figura = new Array(2);
 			figura[0] = new Array(3);
 			figura[1] = new Array(3);
@@ -356,7 +353,7 @@ function ComprovarElement(element:Rigidbody){
 			break;
 			
 		case ("TVertical"):
-			Debug.Log("És la TVertical");
+			//Debug.Log("És la TVertical");
 			figura = new Array(3);
 			figura[0] = new Array(1);
 			figura[1] = new Array(2);
@@ -369,7 +366,7 @@ function ComprovarElement(element:Rigidbody){
 			break;
 			
 		case ("TVerticalInvertida"):
-			Debug.Log("És la TVerticalInvertida");
+			//Debug.Log("És la TVerticalInvertida");
 			figura = new Array(3);
 			for(i=0;i<figura.length;i++){
 				figura[i] = new Array(2);
@@ -385,7 +382,7 @@ function ComprovarElement(element:Rigidbody){
 			break;
 			
 		case ("Z"):
-			Debug.Log("És la Z");
+			//Debug.Log("És la Z");
 			figura = new Array(2);
 			figura[0] = new Array(2);
 			figura[1] = new Array(3);
@@ -400,7 +397,7 @@ function ComprovarElement(element:Rigidbody){
 			break;
 			
 		case ("ZVertical"):
-			Debug.Log("És la ZVertical");
+			//Debug.Log("És la ZVertical");
 			figura = new Array(3);
 			figura[0] = new Array(2);
 			figura[1] = new Array(2);
@@ -417,7 +414,7 @@ function ComprovarElement(element:Rigidbody){
 			break;
 			
 		case ("ZInvertidaVertical"):
-			Debug.Log("És la ZInvertidaVertical");
+			//Debug.Log("És la ZInvertidaVertical");
 			figura = new Array(3);
 			figura[0] = new Array(1);
 			figura[1] = new Array(2);
@@ -433,7 +430,7 @@ function ComprovarElement(element:Rigidbody){
 			break;
 			
 		case ("ZInvertida"):
-			Debug.Log("És la ZInvertida");
+			//Debug.Log("És la ZInvertida");
 			figura = new Array(2);
 			figura[0] = new Array(3);
 			figura[1] = new Array(2);
@@ -466,7 +463,7 @@ function colocarElement(matriuZona:Array, matriuNouElement:Array, posY:int, posX
 				if((posY + i) < 0 || (posY + i) >= matriuZona.length || (posX + j) < 0 || (posX + j) >= matriuZona[0].length)
 					return false;
 					
-				else if(matriuZona[posY + i][posX + j] == 1)
+				else if(matriuZona[posY + i][posX + j] != 0)
 					return false;
 			}
 		}
@@ -479,7 +476,8 @@ function colocarElement(matriuZona:Array, matriuNouElement:Array, posY:int, posX
 		{
 			if(matriuNouElement[i][j] == true)
 			{
-				matriuZona[posY + i][posX + j] = 1;
+				matriuZona[posY + i][posX + j] = 3;
+				GameObject.Find("Tile ("+(hit.point.x+j)+","+(hit.point.z-i)+")").renderer.material.SetColor("_Color",Color.yellow);
 			}
 		}
 	}
@@ -515,7 +513,7 @@ function OnGUI () {
         GUI.Label (Rect (100, 10, 300, 40), "Ten Seconds Left!!");
     }else if (restSeconds == 0 && !towerFaseStart) {
         GUI.Label (Rect (100, 10, 300, 40), "Now place Towers!!");
-        countDownSeconds=countDownSeconds*2;
+        //countDownSeconds=countDownSeconds*2;
         towerFaseStart=true;
         
         //do stuff here
@@ -528,6 +526,41 @@ function OnGUI () {
     	GUI.Label (Rect (100, 10, 300, 40), text);	
     } 
        
+}
+
+
+function checkSafeZone(tile :Transform, safeZoneColor : Color){
+	//if (tile.renderer.material.color != normalcolor)
+	//if(steps > 200){
+		//Debug.LogWarning("No has acabat de tancar la muralla. Game Over.");
+		//return;
+	//}else{
+		//steps++;
+		//Debug.Log("Steps taken by checksafezone: "+steps);
+	
+	if((tile.position.x-1 >= 0 && tile.position.x+1 < GridGenerator.terrainwidth)&& (tile.position.z+1 >= 0 && tile.position.z-1 < GridGenerator.terrainheight)){ 		
+		if(tile.renderer.material.color == safeZoneColor){
+			return;
+		}else{
+			tile.renderer.material.SetColor("_Color",safeZoneColor);			
+			//west
+			//Debug.Log("Entering west at step: "+steps);
+			checkSafeZone(GameObject.Find("Tile ("+(tile.transform.position.x-1)+","+(tile.transform.position.z)+")").transform,safeZoneColor);
+			//east
+			//Debug.Log("Entering east at step: "+steps);
+			checkSafeZone(GameObject.Find("Tile ("+(tile.transform.position.x+1)+","+(tile.transform.position.z)+")").transform,safeZoneColor);			
+			//north
+			//Debug.Log("Entering north at step: "+steps);
+			checkSafeZone(GameObject.Find("Tile ("+(tile.transform.position.x)+","+(tile.transform.position.z+1)+")").transform,safeZoneColor);
+			//south
+			//Debug.Log("Entering south at step: "+steps);
+			checkSafeZone(GameObject.Find("Tile ("+(tile.transform.position.x)+","+(tile.transform.position.z-1)+")").transform,safeZoneColor);
+		}
+	
+	}else{
+		Debug.LogWarning("No has tancat la muralla.Game Over.");
+		return;
+	}
 }
 
 
