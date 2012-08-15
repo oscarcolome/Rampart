@@ -6,6 +6,7 @@ private var roundedRestSeconds : int;
 private var isred : boolean = false;
 
 
+
 private var screenPos;
 private var ray : Ray;
 private var hit : RaycastHit;
@@ -14,6 +15,7 @@ private var hit : RaycastHit;
 private var preview : Rigidbody;
 private var solid : Rigidbody;
 private var cubesPlaced = new ArrayList();
+private var towersPlaced = new ArrayList();
 
 var boolmatrix: Array;
 var figura: Array;
@@ -29,7 +31,6 @@ var tower : Rigidbody;
 var tile : Transform;
 //var width : int;
 //var height : int;
-var terreny : Terrain;
 
 private var vista_previa : boolean;
 private var creat = false;
@@ -39,7 +40,9 @@ private var castle : GameObject;
 private var stone : Transform;
 private var hitwall : RaycastHit;
 private var yaxis = 50;
-private var steps = 0;
+private var nextTile : Transform;
+
+//private var steps = 0;
 
 function Start(){
 	GenerateHashMap();
@@ -64,23 +67,30 @@ function Update(){
 				hit.point.x = Mathf.Round(hit.point.x);
 				hit.point.y = Mathf.Round(hit.point.y);
 				hit.point.z = Mathf.Round(hit.point.z);
-				
-				var children = preview.transform.childCount;
-				isred=false;
-				for(var c=0;c<children;c++){
-					if(preview.transform.GetChild(c).transform.renderer.material.color == Color.red)
-						isred=true;					
-				}
-				
-				if(!isred){
-				
-					figura=ComprovarElement(preview);
-				
-					if(colocarElement(boolmatrix,figura,(GridGenerator.terrainheight-hit.point.z),(hit.point.x))){
-						solid=DestroyPreview();
-						var muralla : Rigidbody = Instantiate(solid,Vector3(hit.point.x,0,hit.point.z), transform.rotation); 
-						cubesPlaced.Add(muralla);
+				if (preview!= null){
+					var children = preview.transform.childCount;
+					isred=false;
+					for(var c=0;c<children;c++){
+						if(preview.transform.GetChild(c).transform.renderer.material.color == Color.red)
+							isred=true;					
 					}
+				
+					if(!isred){
+				
+						figura=ComprovarElement(preview);
+				
+						if(colocarElement(boolmatrix,figura,(GridGenerator.terrainheight-hit.point.z),(hit.point.x))){
+							solid=DestroyPreview();
+							var muralla : Rigidbody = Instantiate(solid,Vector3(hit.point.x,0,hit.point.z), transform.rotation);
+							if(solid == tower) 
+								towersPlaced.Add(muralla);
+							else
+								cubesPlaced.Add(muralla);
+								
+						}
+					}
+				}else{
+					CreatePreview(hit);
 				}	
 			}
 		}else{
@@ -91,11 +101,18 @@ function Update(){
 					MovePreview(hit);	
 			}
 		}
+	}else if(towerFaseEnd){
+	 	expandRadius();
 	}else{
 		if(preview != null)
 			DestroyPreview();
 		ConvertirMuralla();
-		checkSafeZone(GameObject.Find("Tile ("+(castle.transform.position.x)+","+(castle.transform.position.z)+")").transform,Color.yellow);
+		checkSafeZone(GameObject.Find("Tile ("+(castle.transform.position.x)+","+(castle.transform.position.z)+")").transform,Color.green, Color.yellow);		
+		if(Game.fortSuccess){
+
+			Game.fase1timeout=true;
+
+		}
 	}
 }
 
@@ -111,6 +128,14 @@ function CreatePreview(hit:RaycastHit){
 
 function MovePreview(hit:RaycastHit){
     preview.transform.position = hit.transform.position;
+}
+
+function expandRadius(){
+	var turretes : Rigidbody;
+	for(turretes in towersPlaced){
+		//Debug.Log(peces.tag);
+		turretes.GetComponent(SphereCollider).collider.radius = 30;		
+	}
 }
 
 function DestroyPreview(){
@@ -156,6 +181,10 @@ function ConvertirMuralla(){
 	var peces : Rigidbody;
 	for(peces in cubesPlaced){
 		//Debug.Log(peces.tag);
+		var sons :Transform;
+		for (sons in peces.GetComponentInChildren(Transform)){
+			sons.renderer.material.SetColor("_Color", Color.blue);
+		}
 		peces.transform.tag = "Wall";
 	}
 }
@@ -164,7 +193,7 @@ function ConvertirMuralla(){
 function ComprovarElement(element:Rigidbody){
 	switch (element.tag){
 		case ("Turret"):
-				
+							
 		case ("Cub"):
 			//Debug.Log("És el Cub");
 			figura = new Array(2);
@@ -459,25 +488,37 @@ function colocarElement(matriuZona:Array, matriuNouElement:Array, posY:int, posX
 			// només es comprova els punts 'plens' del nou element
 			if(matriuNouElement[i][j] == true)
 			{
+				
 				// si alguna part de la peça esta fora dels límits sortim
 				if((posY + i) < 0 || (posY + i) >= matriuZona.length || (posX + j) < 0 || (posX + j) >= matriuZona[0].length)
 					return false;
 					
 				else if(matriuZona[posY + i][posX + j] != 0)
 					return false;
+					
+				if(towerFaseStart){
+					if(GameObject.Find("Tile ("+(hit.point.x+j)+","+(hit.point.z-i)+")").renderer.material.GetColor("_Color") != Color.yellow){
+						return false;
+					}
+				}
 			}
 		}
 	}
-	
+	var gridpos :GameObject ;
 	// si arribem aquí es pot dibuixar la peça sense comprovar res més
 	for(i = 0; i < matriuNouElement.length; i++)
 	{
 		for(j = 0; j < matriuNouElement[i].length; j++)
 		{
 			if(matriuNouElement[i][j] == true)
-			{
-				matriuZona[posY + i][posX + j] = 3;
-				GameObject.Find("Tile ("+(hit.point.x+j)+","+(hit.point.z-i)+")").renderer.material.SetColor("_Color",Color.yellow);
+			{	
+				if(towerFaseStart){			
+					matriuZona[posY + i][posX + j] = -2;
+				}else{
+					matriuZona[posY + i][posX + j] = 3;
+					gridpos=GameObject.Find("Tile ("+(hit.point.x+j)+","+(hit.point.z-i)+")");
+					gridpos.renderer.material.SetColor("_Color",Color.green);
+				}
 			}
 		}
 	}
@@ -507,14 +548,17 @@ function OnGUI () {
     	text = String.Format ("Torres: Temps restant: {0:00}:{1:00}", displayMinutes, displaySeconds);
     else
     	text = String.Format ("Enmurallar: Temps restant: {0:00}:{1:00}", displayMinutes, displaySeconds);
+    	
     //display messages or whatever here -->do stuff based on your timer
     if (restSeconds == 10) {
     	//diferents missatges segons el temps que queda
         GUI.Label (Rect (100, 10, 300, 40), "Ten Seconds Left!!");
-    }else if (restSeconds == 0 && !towerFaseStart) {
-        GUI.Label (Rect (100, 10, 300, 40), "Now place Towers!!");
-        //countDownSeconds=countDownSeconds*2;
-        towerFaseStart=true;
+    }else if (restSeconds == 0 && !towerFaseStart) {    	
+    	if(Game.fortSuccess){    		
+        	GUI.Label (Rect (100, 10, 300, 40), "Now place Towers!!");
+        	countDownSeconds=countDownSeconds*2;
+        	towerFaseStart=true;
+        }
         
         //do stuff here
     }else if (restSeconds == 0 && towerFaseStart){
@@ -528,39 +572,59 @@ function OnGUI () {
        
 }
 
-
-function checkSafeZone(tile :Transform, safeZoneColor : Color){
-	//if (tile.renderer.material.color != normalcolor)
-	//if(steps > 200){
-		//Debug.LogWarning("No has acabat de tancar la muralla. Game Over.");
-		//return;
+function checkGrid(pos : Vector3){
+	
+		foundtile = GameObject.Find("Tile ("+pos.x+","+pos.z+")");
+	//if (foundtile.GetComponent(MeshFilter).mesh == wallmeshgrid){
+		return foundtile.transform;
+	
 	//}else{
-		//steps++;
-		//Debug.Log("Steps taken by checksafezone: "+steps);
+	//	return null; 
+	//}
 	
-	if((tile.position.x-1 >= 0 && tile.position.x+1 < GridGenerator.terrainwidth)&& (tile.position.z+1 >= 0 && tile.position.z-1 < GridGenerator.terrainheight)){ 		
-		if(tile.renderer.material.color == safeZoneColor){
-			return;
-		}else{
-			tile.renderer.material.SetColor("_Color",safeZoneColor);			
-			//west
-			//Debug.Log("Entering west at step: "+steps);
-			checkSafeZone(GameObject.Find("Tile ("+(tile.transform.position.x-1)+","+(tile.transform.position.z)+")").transform,safeZoneColor);
-			//east
-			//Debug.Log("Entering east at step: "+steps);
-			checkSafeZone(GameObject.Find("Tile ("+(tile.transform.position.x+1)+","+(tile.transform.position.z)+")").transform,safeZoneColor);			
-			//north
-			//Debug.Log("Entering north at step: "+steps);
-			checkSafeZone(GameObject.Find("Tile ("+(tile.transform.position.x)+","+(tile.transform.position.z+1)+")").transform,safeZoneColor);
-			//south
-			//Debug.Log("Entering south at step: "+steps);
-			checkSafeZone(GameObject.Find("Tile ("+(tile.transform.position.x)+","+(tile.transform.position.z-1)+")").transform,safeZoneColor);
-		}
+}
+
+
+function checkSafeZone(tile :Transform,limitColor : Color, safeZoneColor : Color){
 	
-	}else{
-		Debug.LogWarning("No has tancat la muralla.Game Over.");
+	if(tile.renderer.material.GetColor("_Color") == limitColor || tile.renderer.material.GetColor("_Color") == safeZoneColor){	
 		return;
 	}
+	 
+	tile.renderer.material.SetColor("_Color",safeZoneColor);			
+	//west	
+	nextTile = checkGrid(Vector3((tile.transform.position.x-1),tile.transform.position.y,tile.transform.position.z));
+	
+	checkSafeZone(nextTile,limitColor,safeZoneColor);
+	
+		//}
+	//east
+	nextTile = checkGrid(Vector3((tile.transform.position.x+1),tile.transform.position.y,tile.transform.position.z));
+	
+	checkSafeZone(nextTile,limitColor,safeZoneColor);			
+	
+		//}
+	//north
+	nextTile = checkGrid(Vector3((tile.transform.position.x),tile.transform.position.y,tile.transform.position.z+1));
+	
+	checkSafeZone(nextTile,limitColor,safeZoneColor);
+	
+		//}
+	//south
+	nextTile = checkGrid(Vector3((tile.transform.position.x),tile.transform.position.y,tile.transform.position.z-1));
+	
+	checkSafeZone(nextTile,limitColor,safeZoneColor);
+	
+	Game.fortSuccess=true;
+				
+	return;
+		//}		
+	//}	
+	/*}else{
+		Game.fortSuccess=false;
+		return;
+	}*/
+	
 }
 
 

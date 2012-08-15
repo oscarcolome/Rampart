@@ -1,6 +1,8 @@
 #pragma strict
 
 static var fase1 : boolean = false;
+static var over : boolean = false;
+static var fase1timeout : boolean = false;
 static var fortSuccess : boolean = false;
 static var postfase1 :boolean =false;
 static var fase2 : boolean = false;
@@ -13,16 +15,28 @@ private var phasetwo : Fase2 = null;
 
 function Update () {
 
-	if(!startingphase){
-		creation = GetComponentInChildren(GridGenerator);
-		if(creation == null)
-			creation= gameObject.AddComponent(GridGenerator);
-		creation.enabled = true;		
-	}else if(!fase1){
-		phaseone = GetComponentInChildren(Fase1);
-		if(phaseone == null)	
-			phaseone = gameObject.AddComponent(Fase1);
-		phaseone.enabled = true;	
+	if(!over){
+		if(!startingphase){
+			creation = GetComponentInChildren(GridGenerator);
+			if(creation == null)
+				creation= gameObject.AddComponent(GridGenerator);
+			creation.enabled = true;		
+		}else if(!fase1){
+			phaseone = GetComponentInChildren(Fase1);
+			if(phaseone == null)	
+				phaseone = gameObject.AddComponent(Fase1);
+			phaseone.enabled = true;
+			if(fase1timeout && !fortSuccess)
+				over=true;	
+		}
+	}else{
+		if(creation != null)
+			creation=null;
+		if(phaseone != null)
+			phaseone.enabled = false;
+		this.enabled=false;
+		Debug.Log("Game Over.");
+		return;
 	}
 	/*if(!fase1){	
 		phaseone = GetComponentInChildren(Fase1);

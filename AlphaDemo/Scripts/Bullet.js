@@ -15,5 +15,7 @@ function Update () {
 function OnCollisionEnter(hit : Collision){
 	if(hit.collider.tag == "Bot"){
 		Destroy(gameObject);	
-	}
+	}//else if(hit.collider.tag == "Wall"){
+		//hit.transform.position
+	//}
 }
