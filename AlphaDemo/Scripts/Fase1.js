@@ -41,7 +41,7 @@ private var yaxis = 50;
 private var nextTile : Transform;
 private var valor : int = 0;
 private var result: int;
-
+private var ntowers: int = 4;
 
 //private var steps = 0;
 
@@ -106,10 +106,11 @@ function Update(){
 	 	expandRadius();
 	}else{
 		if(preview != null)
-			DestroyPreview();
-			ConvertirMuralla();
+			DestroyPreview();			
 			result=checkSafeZone(castle.transform.position.x,castle.transform.position.z);		
 		if(result==2){
+			ConvertirMuralla();
+			MarkCastle();
 			Game.fortSuccess=true;	
 			Game.fase1timeout=true;
 
@@ -173,7 +174,7 @@ function MarkCastle(){
 	for(var x=xgridless; x<xgridmore+1;x++){		
 		for(var z=zgridless; z<zgridmore+1;z++){	
 			//Debug.Log("Value of x "+x+" z "+z);	
-			boolmatrix[x][z] = 1;			
+			boolmatrix[z][x] = 1;			
 		}
 	}
 }
@@ -494,14 +495,13 @@ function colocarElement(matriuNouElement:Array, posY:int, posX:int)
 				if((posY + i) < 0 || (posY + i) >= boolmatrix.length || (posX + j) < 0 || (posX + j) >= boolmatrix[0].length)
 					return false;
 					
-				else if(boolmatrix[posY + i][posX + j] != 0)
-					return false;
-					
 				if(towerFaseStart){
-					if(boolmatrix[posY+i][posX+j] != 2){
+					if(boolmatrix[posY+i][posX+j] != 2)
+						return false;					
+				}else{	
+					if(boolmatrix[posY + i][posX + j] != 0)
 						return false;
-					}
-				}
+				}				
 			}
 		}
 	}
@@ -594,10 +594,9 @@ function checkSafeZone(posx : int , posz : int) : int{
 	if(boolmatrix[posz][posx] == 3 || boolmatrix[posz][posx] == 2){
 		return 2;
 	}
-			
+	
 	boolmatrix[posz][posx] = 2;
 	valor = boolmatrix[posz][posx];
-			
 	//foundtile = GameObject.Find("Tile ("+posx+","+(100-posz)+")");
 	//foundtile.transform.renderer.material.SetColor("_Color",Color.yellow);
 	//west	
@@ -608,94 +607,12 @@ function checkSafeZone(posx : int , posz : int) : int{
 	valor=checkSafeZone(posx,(posz+1));
 	//south
 	valor=checkSafeZone(posx,(posz-1));
-	//while(!(posx < 0 || posz < 0  || posx >= GridGenerator.terrainwidth || posz >= GridGenerator.terrainheight || valor==-1)){
-		/*i=0;
-		while(boolmatrix[posz][posx + i] != 3){
-			boolmatrix[posz][posx+i] = 2;
-			valor = boolmatrix[posz][posx+i];
-			foundtile = GameObject.Find("Tile ("+(posx+i)+","+posz+")");
-			foundtile.transform.renderer.material.SetColor("_Color",Color.yellow);	
-			i--;
-		
-		}
-		i=0;
-		while(boolmatrix[posz][posx + i] != 3){
-			boolmatrix[posz][posx+i] = 2;
-			valor = boolmatrix[posz][posx+i];
-			foundtile = GameObject.Find("Tile ("+(posx+i)+","+posz+")");
-			foundtile.transform.renderer.material.SetColor("_Color",Color.yellow);	
-			i++;
-		
-		}
-		j=0;
-		while(boolmatrix[posz+j][posx] != 3){
-			boolmatrix[posz+j][posx] = 2;
-			valor = boolmatrix[posz+j][posx];
-			foundtile = GameObject.Find("Tile ("+posx+","+(100-posz+j)+")");
-			foundtile.transform.renderer.material.SetColor("_Color",Color.yellow);	
-			j++;
-		
-		}
-		j=0;
-		while(boolmatrix[posz+j][posx] != 3){
-			boolmatrix[posz+j][posx] = 2;
-			valor = boolmatrix[posz+j][posx];
-			foundtile = GameObject.Find("Tile ("+posx+","+(100-posz+j)+")");
-			foundtile.transform.renderer.material.SetColor("_Color",Color.yellow);	
-			j--;
-		
-		}*/
-	//}
+	
 		
 	return valor;
 	
 	
 }
-
-
-/*function checkSafeZone(tile :Transform,limitColor : Color, safeZoneColor : Color){
-	
-	if(tile.renderer.material.GetColor("_Color") == limitColor || tile.renderer.material.GetColor("_Color") == safeZoneColor){	
-		return;
-	}
-	 
-	tile.renderer.material.SetColor("_Color",safeZoneColor);			
-	//west	
-	nextTile = checkGrid(Vector3((tile.transform.position.x-1),tile.transform.position.y,tile.transform.position.z));
-	
-	checkSafeZone(nextTile,limitColor,safeZoneColor);
-	
-		//}
-	//east
-	nextTile = checkGrid(Vector3((tile.transform.position.x+1),tile.transform.position.y,tile.transform.position.z));
-	
-	checkSafeZone(nextTile,limitColor,safeZoneColor);			
-	
-		//}
-	//north
-	nextTile = checkGrid(Vector3((tile.transform.position.x),tile.transform.position.y,tile.transform.position.z+1));
-	
-	checkSafeZone(nextTile,limitColor,safeZoneColor);
-	
-		//}
-	//south
-	nextTile = checkGrid(Vector3((tile.transform.position.x),tile.transform.position.y,tile.transform.position.z-1));
-	
-	checkSafeZone(nextTile,limitColor,safeZoneColor);
-	
-	Game.fortSuccess=true;
-				
-	return;
-		//}		
-	//}	
-	}else{
-		Game.fortSuccess=false;
-		return;
-	}
-	
-}*/
-
-
 
 //function GenerateTiles(hit : RaycastHit){
 //	// Set Tiles
