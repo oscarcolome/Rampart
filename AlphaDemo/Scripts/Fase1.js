@@ -5,8 +5,6 @@ private var displayMinutes : int;
 private var roundedRestSeconds : int;
 private var isred : boolean = false;
 
-
-
 private var screenPos;
 private var ray : Ray;
 private var hit : RaycastHit;
@@ -41,6 +39,9 @@ private var stone : Transform;
 private var hitwall : RaycastHit;
 private var yaxis = 50;
 private var nextTile : Transform;
+private var valor : int = 0;
+private var result: int;
+
 
 //private var steps = 0;
 
@@ -79,7 +80,7 @@ function Update(){
 				
 						figura=ComprovarElement(preview);
 				
-						if(colocarElement(boolmatrix,figura,(GridGenerator.terrainheight-hit.point.z),(hit.point.x))){
+						if(colocarElement(figura,(GridGenerator.terrainheight-hit.point.z),(hit.point.x))){
 							solid=DestroyPreview();
 							var muralla : Rigidbody = Instantiate(solid,Vector3(hit.point.x,0,hit.point.z), transform.rotation);
 							if(solid == tower) 
@@ -106,10 +107,10 @@ function Update(){
 	}else{
 		if(preview != null)
 			DestroyPreview();
-		ConvertirMuralla();
-		checkSafeZone(GameObject.Find("Tile ("+(castle.transform.position.x)+","+(castle.transform.position.z)+")").transform,Color.green, Color.yellow);		
-		if(Game.fortSuccess){
-
+			ConvertirMuralla();
+			result=checkSafeZone(castle.transform.position.x,castle.transform.position.z);		
+		if(result==2){
+			Game.fortSuccess=true;	
 			Game.fase1timeout=true;
 
 		}
@@ -477,27 +478,27 @@ function ComprovarElement(element:Rigidbody){
 	return figura;
 }
 
-function colocarElement(matriuZona:Array, matriuNouElement:Array, posY:int, posX:int)
+function colocarElement(matriuNouElement:Array, posY:int, posX:int)
 {
 	for(var i = 0; i < matriuNouElement.length; i++)
 	{
 		for(var j = 0; j < matriuNouElement[i].length; j++)
 		{
 			//Debug.Log("Value of posY+i: "+(posY+i)+" posX+j "+(posX+j));
-			//Debug.Log("Value of matriuzona: "+matriuZona[posY+i][posX+j]);
+			//Debug.Log("Value of matriuzona: "+boolmatrix[posY+i][posX+j]);
 			// només es comprova els punts 'plens' del nou element
 			if(matriuNouElement[i][j] == true)
 			{
 				
 				// si alguna part de la peça esta fora dels límits sortim
-				if((posY + i) < 0 || (posY + i) >= matriuZona.length || (posX + j) < 0 || (posX + j) >= matriuZona[0].length)
+				if((posY + i) < 0 || (posY + i) >= boolmatrix.length || (posX + j) < 0 || (posX + j) >= boolmatrix[0].length)
 					return false;
 					
-				else if(matriuZona[posY + i][posX + j] != 0)
+				else if(boolmatrix[posY + i][posX + j] != 0)
 					return false;
 					
 				if(towerFaseStart){
-					if(GameObject.Find("Tile ("+(hit.point.x+j)+","+(hit.point.z-i)+")").renderer.material.GetColor("_Color") != Color.yellow){
+					if(boolmatrix[posY+i][posX+j] != 2){
 						return false;
 					}
 				}
@@ -513,9 +514,9 @@ function colocarElement(matriuZona:Array, matriuNouElement:Array, posY:int, posX
 			if(matriuNouElement[i][j] == true)
 			{	
 				if(towerFaseStart){			
-					matriuZona[posY + i][posX + j] = -2;
+					boolmatrix[posY + i][posX + j] = -2;
 				}else{
-					matriuZona[posY + i][posX + j] = 3;
+					boolmatrix[posY + i][posX + j] = 3;
 					gridpos=GameObject.Find("Tile ("+(hit.point.x+j)+","+(hit.point.z-i)+")");
 					gridpos.renderer.material.SetColor("_Color",Color.green);
 				}
@@ -584,8 +585,75 @@ function checkGrid(pos : Vector3){
 	
 }
 
+function checkSafeZone(posx : int , posz : int) : int{
+	
+	if (posx < 0 || posz < 0  || posx >= GridGenerator.terrainwidth || posz >= GridGenerator.terrainheight || valor==-1){
+		return -1;
+	}
+	
+	if(boolmatrix[posz][posx] == 3 || boolmatrix[posz][posx] == 2){
+		return 2;
+	}
+			
+	boolmatrix[posz][posx] = 2;
+	valor = boolmatrix[posz][posx];
+			
+	//foundtile = GameObject.Find("Tile ("+posx+","+(100-posz)+")");
+	//foundtile.transform.renderer.material.SetColor("_Color",Color.yellow);
+	//west	
+	valor=checkSafeZone((posx-1),posz);
+	//east
+	valor=checkSafeZone((posx+1),posz);
+	//north
+	valor=checkSafeZone(posx,(posz+1));
+	//south
+	valor=checkSafeZone(posx,(posz-1));
+	//while(!(posx < 0 || posz < 0  || posx >= GridGenerator.terrainwidth || posz >= GridGenerator.terrainheight || valor==-1)){
+		/*i=0;
+		while(boolmatrix[posz][posx + i] != 3){
+			boolmatrix[posz][posx+i] = 2;
+			valor = boolmatrix[posz][posx+i];
+			foundtile = GameObject.Find("Tile ("+(posx+i)+","+posz+")");
+			foundtile.transform.renderer.material.SetColor("_Color",Color.yellow);	
+			i--;
+		
+		}
+		i=0;
+		while(boolmatrix[posz][posx + i] != 3){
+			boolmatrix[posz][posx+i] = 2;
+			valor = boolmatrix[posz][posx+i];
+			foundtile = GameObject.Find("Tile ("+(posx+i)+","+posz+")");
+			foundtile.transform.renderer.material.SetColor("_Color",Color.yellow);	
+			i++;
+		
+		}
+		j=0;
+		while(boolmatrix[posz+j][posx] != 3){
+			boolmatrix[posz+j][posx] = 2;
+			valor = boolmatrix[posz+j][posx];
+			foundtile = GameObject.Find("Tile ("+posx+","+(100-posz+j)+")");
+			foundtile.transform.renderer.material.SetColor("_Color",Color.yellow);	
+			j++;
+		
+		}
+		j=0;
+		while(boolmatrix[posz+j][posx] != 3){
+			boolmatrix[posz+j][posx] = 2;
+			valor = boolmatrix[posz+j][posx];
+			foundtile = GameObject.Find("Tile ("+posx+","+(100-posz+j)+")");
+			foundtile.transform.renderer.material.SetColor("_Color",Color.yellow);	
+			j--;
+		
+		}*/
+	//}
+		
+	return valor;
+	
+	
+}
 
-function checkSafeZone(tile :Transform,limitColor : Color, safeZoneColor : Color){
+
+/*function checkSafeZone(tile :Transform,limitColor : Color, safeZoneColor : Color){
 	
 	if(tile.renderer.material.GetColor("_Color") == limitColor || tile.renderer.material.GetColor("_Color") == safeZoneColor){	
 		return;
@@ -620,12 +688,12 @@ function checkSafeZone(tile :Transform,limitColor : Color, safeZoneColor : Color
 	return;
 		//}		
 	//}	
-	/*}else{
+	}else{
 		Game.fortSuccess=false;
 		return;
-	}*/
+	}
 	
-}
+}*/
 
 
 

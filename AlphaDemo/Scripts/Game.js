@@ -30,12 +30,12 @@ function Update () {
 				over=true;	
 		}
 	}else{
+		Debug.Log("Game Over.");
 		if(creation != null)
 			creation=null;
 		if(phaseone != null)
 			phaseone.enabled = false;
-		this.enabled=false;
-		Debug.Log("Game Over.");
+		this.enabled=false;		
 		return;
 	}
 	/*if(!fase1){	
@@ -49,6 +49,5 @@ function Update () {
 		if(phasetwo == null)	
 			phasetwo = gameObject.AddComponent(Fase2);
 		phasetwo.enabled = true;
-	}
-	*/
+	}*/
 }
