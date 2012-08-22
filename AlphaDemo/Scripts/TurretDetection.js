@@ -1,5 +1,5 @@
 var rocket: Rigidbody;
-var rotatespeed = 15f;
+var rotatespeed : int;
 var cannon: Transform;
 var shot : Transform;
 var target: Transform;
@@ -12,19 +12,31 @@ private var aimError : float;
 private var queued=true;
 private var range = 30;
 private var distance;
+private var errorAmount : float = 1f;
 
 function Start(){
 	othertargets = GameObject.FindGameObjectsWithTag("Bot");
 	shot=cannon.FindChild("ShootPoint");
 }
 
-function Update(){
+function Update(){	
 	if(target){
 		distance = distance=Vector3.Distance(transform.position,target.position);
+		target.position.x = target.position.x + aimError;
+		target.position.y = target.position.y + aimError;
+		target.position.z = target.position.z + aimError;
 		cannon.rotation = Quaternion.Lerp(cannon.rotation,Quaternion.LookRotation(target.position-cannon.position),Time.deltaTime*rotatespeed);
 		if(distance <= range && Time.time >= nextFire){
 			Shoot();
 		}
+	}else{
+		i=0;
+		while(target == null && i<othertargets.Length){
+			if (othertargets[i] != null && transform.collider.bounds.Contains(othertargets[i].transform.position)){
+				target=othertargets[i].transform;
+			}
+			i++;			
+		}	
 	}
 }
 
@@ -48,7 +60,7 @@ function OnTriggerEnter(coll: Collider){
 	}
 }
 
-function OnTriggerStay(coll: Collider){
+function OnTriggerStay(coll: Collider){	
 	if(target == null && coll.tag == "Bot"){
 		var i=0;
 		while(target == null && i<othertargets.Length) {
@@ -64,7 +76,18 @@ function OnTriggerExit(coll: Collider){
 	//Si l'objectiu surt dels limits
 	if(coll.gameObject.transform == target){
 		target = null;
+		i=0;
+		while(target == null && i<othertargets.Length){
+			if (othertargets[i] != null && transform.collider.bounds.Contains(othertargets[i].transform.position)){
+				target=othertargets[i].transform;
+			}
+			i++;			
+		}
 	}
+}
+
+function CalculateAimError(){
+	aimError = Random.Range(-errorAmount, errorAmount);
 }
 
 /*function CalculateAim(pos : Vector3){

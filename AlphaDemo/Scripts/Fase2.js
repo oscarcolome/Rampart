@@ -6,8 +6,9 @@ var spawnPoint : Transform[];
 
 
 function Start () {
-	var pos: Transform = spawnPoint[Random.Range(0, spawnPoint.length)];
+	
 	for(var i=0;i<numberenemies;i++){
+		var pos: Transform = spawnPoint[Random.Range(0, spawnPoint.length)];
 		var bot : Transform = Instantiate(enemy,pos.position,transform.rotation);
 		wave.Add(bot);
 	}	

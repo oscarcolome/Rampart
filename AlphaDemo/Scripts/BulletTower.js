@@ -1,6 +1,6 @@
 #pragma strict
-var speed : float;
-var range : float;
+private var speed : int = 15;
+private var range : float = 30f;
 private var distance : float;
 
 
@@ -14,8 +14,10 @@ function Update () {
 
 function OnCollisionEnter(hit : Collision){
 	if(hit.collider.tag == "Bot"){
-		Destroy(gameObject);	
-	}//else if(hit.collider.tag == "Wall"){
+		Destroy(hit.gameObject);		
+		Destroy(gameObject);
+	}
+	
 		//hit.transform.position
 	//}
 }

@@ -15,10 +15,11 @@ private var solid : Rigidbody;
 private var cubesPlaced = new ArrayList();
 private var towersPlaced = new ArrayList();
 
-var boolmatrix: Array;
+static var boolmatrix: Array;
 var figura: Array;
 
 var countDownSeconds : int;
+private var remainingSeconds : int;
 
 private var xgrid:int;
 private var zgrid:int;
@@ -41,11 +42,12 @@ private var yaxis = 50;
 private var nextTile : Transform;
 private var valor : int = 0;
 private var result: int;
-private var ntowers: int = 4;
+private var ntowers: int = 2;
 
 //private var steps = 0;
 
 function Start(){
+	remainingSeconds = countDownSeconds;
 	GenerateHashMap();
 	castle=GameObject.FindGameObjectWithTag("Fortress");
 	//Debug.Log("Castle value "+castle);	
@@ -102,8 +104,8 @@ function Update(){
 					MovePreview(hit);	
 			}
 		}
-	}else if(towerFaseEnd){
-	 	expandRadius();
+	//}else if(towerFaseEnd){		
+	 	
 	}else{
 		if(preview != null)
 			DestroyPreview();			
@@ -122,7 +124,16 @@ function CreatePreview(hit:RaycastHit){
 	if(!towerFaseStart){
 		solid = cubes[Random.Range(0,cubes.length)];		
 	}else{
-		solid = tower;
+		if(ntowers >= 0){
+			solid = tower;			
+			ntowers=ntowers-1;
+		}else{
+			solid = null;
+			towerFaseEnd=true;
+			expandRadius();
+			remainingSeconds=0;
+			return;			
+		}
 	}
 	preview = Instantiate(solid,Vector3(hit.point.x,1,hit.point.z), transform.rotation);
 	vista_previa=true;
@@ -136,7 +147,7 @@ function expandRadius(){
 	var turretes : Rigidbody;
 	for(turretes in towersPlaced){
 		//Debug.Log(peces.tag);
-		turretes.GetComponent(SphereCollider).collider.radius = 30;		
+		turretes.GetComponent(SphereCollider).collider.radius = 20;		
 	}
 }
 
@@ -532,7 +543,7 @@ function OnGUI () {
     //instead of when your game started
     //es resta el temps (ni idea) del temps inicial
     
-   	restSeconds = countDownSeconds - (Time.time);
+   	restSeconds = remainingSeconds - (Time.time);
    	//quan el comptador arriba a 0, seguira calculant valors negatius
    	//la funcio max selecciona el maxim entre 0 i el valor del temps
    	//per mantenir el comptador a 0 quan baixi a -1,-2,-3...
@@ -551,17 +562,22 @@ function OnGUI () {
     	text = String.Format ("Enmurallar: Temps restant: {0:00}:{1:00}", displayMinutes, displaySeconds);
     	
     //display messages or whatever here -->do stuff based on your timer
-    if (restSeconds == 10) {
+    //if (restSeconds == 10) {
     	//diferents missatges segons el temps que queda
-        GUI.Label (Rect (100, 10, 300, 40), "Ten Seconds Left!!");
-    }else if (restSeconds == 0 && !towerFaseStart) {    	
+        //GUI.Label (Rect (100, 10, 300, 40), "Ten Seconds Left!!");
+    //}else 
+    if (restSeconds == 0 && !towerFaseStart) {    	
     	if(Game.fortSuccess){    		
         	GUI.Label (Rect (100, 10, 300, 40), "Now place Towers!!");
-        	countDownSeconds=countDownSeconds*2;
+        	remainingSeconds=remainingSeconds*2;
         	towerFaseStart=true;
         }
-        
-        //do stuff here
+    }else if (restSeconds > 0 && towerFaseEnd){
+    	restSeconds=0;
+    	Game.fase1 = true;
+    	Game.fase2 = false;
+    
+    //do stuff here
     }else if (restSeconds == 0 && towerFaseStart){
     	towerFaseEnd = true;
     	Game.fase1 = true;
@@ -571,18 +587,6 @@ function OnGUI () {
     	GUI.Label (Rect (100, 10, 300, 40), text);	
     } 
        
-}
-
-function checkGrid(pos : Vector3){
-	
-		foundtile = GameObject.Find("Tile ("+pos.x+","+pos.z+")");
-	//if (foundtile.GetComponent(MeshFilter).mesh == wallmeshgrid){
-		return foundtile.transform;
-	
-	//}else{
-	//	return null; 
-	//}
-	
 }
 
 function checkSafeZone(posx : int , posz : int) : int{

@@ -12,7 +12,7 @@ static var terrainheight : int;
 function Start () {
 
 	GenerateTiles();	
-	GenerateCastle();
+	//GenerateCastle();
 	Game.startingphase=true;
 	
 }

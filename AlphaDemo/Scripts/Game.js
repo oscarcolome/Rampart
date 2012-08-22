@@ -28,6 +28,12 @@ function Update () {
 			phaseone.enabled = true;
 			if(fase1timeout && !fortSuccess)
 				over=true;	
+		}else if(!fase2){
+			phaseone.enabled = false;
+			phasetwo = GetComponentInChildren(Fase2);
+			if(phasetwo == null)	
+				phasetwo = gameObject.AddComponent(Fase2);
+			phasetwo.enabled = true;
 		}
 	}else{
 		Debug.Log("Game Over.");
@@ -43,11 +49,5 @@ function Update () {
 		if(phaseone == null)	
 			phaseone = gameObject.AddComponent(Fase1);
 		phaseone.enabled = true;
-	}else if(!fase2){
-		phaseone.enabled = false;
-		phasetwo = GetComponentInChildren(Fase2);
-		if(phasetwo == null)	
-			phasetwo = gameObject.AddComponent(Fase2);
-		phasetwo.enabled = true;
 	}*/
 }
