@@ -13,15 +13,19 @@ private var queued=true;
 private var range = 30;
 private var distance;
 private var errorAmount : float = 1f;
+private var n_targets : int;
 
 function Start(){
 	othertargets = GameObject.FindGameObjectsWithTag("Bot");
 	shot=cannon.FindChild("ShootPoint");
+	//target=othertargets[0];
+	n_targets= othertargets.Length;
+	
 }
 
 function Update(){	
 	if(target){
-		distance = distance=Vector3.Distance(transform.position,target.position);
+		distance = Vector3.Distance(transform.position,target.position);
 		target.position.x = target.position.x + aimError;
 		target.position.y = target.position.y + aimError;
 		target.position.z = target.position.z + aimError;
@@ -29,15 +33,18 @@ function Update(){
 		if(distance <= range && Time.time >= nextFire){
 			Shoot();
 		}
-	}else{
-		i=0;
+	}//else{
+		//while(target == null){
+			//target=GameObject.FindGameObjectWithTag("Bot").transform;
+		//}
+		/*i=0;
 		while(target == null && i<othertargets.Length){
 			if (othertargets[i] != null && transform.collider.bounds.Contains(othertargets[i].transform.position)){
 				target=othertargets[i].transform;
 			}
 			i++;			
-		}	
-	}
+		}*/	
+	//}
 }
 
 
@@ -47,7 +54,7 @@ function OnTriggerEnter(coll: Collider){
 	if(target == null && coll.tag == "Bot"){
 		target=coll.gameObject.transform;
 
-	}else if (target != null && coll.tag == "Bot"){
+	}/*else if (target != null && coll.tag == "Bot"){
 		queued=false;
 		var i=0;
 		while(!queued && i<othertargets.Length){
@@ -57,18 +64,19 @@ function OnTriggerEnter(coll: Collider){
 			}
 			i++;
 		}
-	}
+	}*/
 }
 
 function OnTriggerStay(coll: Collider){	
 	if(target == null && coll.tag == "Bot"){
-		var i=0;
+		target=coll.gameObject.transform;
+		/*var i=0;
 		while(target == null && i<othertargets.Length) {
 			if (othertargets[i] != null && transform.collider.bounds.Contains(othertargets[i].transform.position)){
 				target=othertargets[i].transform;
 			}
 			i++;
-		}
+		}*/
 	}
 }
 
@@ -76,13 +84,14 @@ function OnTriggerExit(coll: Collider){
 	//Si l'objectiu surt dels limits
 	if(coll.gameObject.transform == target){
 		target = null;
-		i=0;
+		target = GameObject.FindGameObjectWithTag("Bot").transform;
+		/*i=0;
 		while(target == null && i<othertargets.Length){
 			if (othertargets[i] != null && transform.collider.bounds.Contains(othertargets[i].transform.position)){
 				target=othertargets[i].transform;
 			}
 			i++;			
-		}
+		}*/
 	}
 }
 

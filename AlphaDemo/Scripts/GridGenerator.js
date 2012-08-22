@@ -13,7 +13,8 @@ function Start () {
 
 	GenerateTiles();	
 	//GenerateCastle();
-	Game.startingphase=true;
+	//Application.LoadLevel(0);
+	
 	
 }
 
@@ -31,6 +32,32 @@ function GenerateCastle(){
 	
 }
 
+function OnGUI () {
+
+	GUILayout.BeginArea(new Rect(0, 0, Screen.width, Screen.height));
+    GUILayout.FlexibleSpace();
+    GUILayout.BeginHorizontal();
+    GUILayout.FlexibleSpace();
+	if(creat){
+		if(GUILayout.Button("Start!")){
+			Game.startingphase=true;
+		}
+	}else{
+    	GUILayout.Label("Loading map...");
+    }
+   	/*if (GUI.Button (Rect (10,10,150,100), "Play Game")) {
+		Application.LoadLevel(0);
+	}else if (GUI.Button (Rect (200,150,150,100), "Quit")) {
+		Application.Quit();
+	}*/
+
+    GUILayout.FlexibleSpace();
+    GUILayout.EndHorizontal();
+    GUILayout.FlexibleSpace();
+    GUILayout.EndArea();
+	
+
+}
 
 
 function GenerateTiles(){

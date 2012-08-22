@@ -22,6 +22,8 @@ function Update () {
 				creation= gameObject.AddComponent(GridGenerator);
 			creation.enabled = true;		
 		}else if(!fase1){
+//			creation.disabled=true;
+			creation.enabled=false;
 			phaseone = GetComponentInChildren(Fase1);
 			if(phaseone == null)	
 				phaseone = gameObject.AddComponent(Fase1);
@@ -36,7 +38,8 @@ function Update () {
 			phasetwo.enabled = true;
 		}
 	}else{
-		Debug.Log("Game Over.");
+		Application.LoadLevel("Menu");
+		//Debug.Log("Game Over.");
 		if(creation != null)
 			creation=null;
 		if(phaseone != null)
