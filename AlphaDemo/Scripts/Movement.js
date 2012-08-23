@@ -18,6 +18,7 @@ private var distance;
 private var hit : RaycastHit;
 var rotatespeed : int;
 var shot : Transform;
+private var bulletbot : Rigidbody;
 
 function Start(){
 	//waypoints = GameObject.FindGameObjectsWithTag("Wall");
@@ -55,8 +56,8 @@ function Update () {
 			endPoint.position.y = endPoint.position.y + aimError;
 			endPoint.position.z = endPoint.position.z + aimError;
 			transform.rotation = Quaternion.Lerp(transform.rotation,Quaternion.LookRotation(endPoint.position-transform.position),Time.deltaTime*rotatespeed);
-			if(Time.time >= nextFire){
-				Shoot();
+			if(Time.time >= nextFire && bulletbot == null){
+				Shoot();				
 			}	
 						
 			/*Destroy(endPoint.gameObject);
@@ -85,17 +86,11 @@ function findWayPoint(){
 	}
 }
 
-//function OnCollisionEnter(hit : Collision){
-//	if(hit.collider.tag == "Rocket"){
-//		Destroy(gameObject);	
-//	}
-//}
-
 function CalculateAimError(){
 	aimError = Random.Range(-errorAmount, errorAmount);
 }
 
 function Shoot(){
 	nextFire = Time.time + fireRate;
-    Instantiate(rocket,shot.position,shot.rotation);
+    bulletbot=Instantiate(rocket,shot.position,shot.rotation);
 }

@@ -8,7 +8,7 @@ function OnGUI () {
     GUILayout.FlexibleSpace();
 
     if(GUILayout.Button("Play Game")){
-    	Application.LoadLevel("demo1");
+    	Application.LoadLevel(0);
     }else if(GUILayout.Button("Quit")){
     	Application.Quit();
     }

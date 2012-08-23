@@ -13,13 +13,11 @@ private var queued=true;
 private var range = 30;
 private var distance;
 private var errorAmount : float = 1f;
-private var n_targets : int;
+private var bullet : Rigidbody;
 
 function Start(){
 	othertargets = GameObject.FindGameObjectsWithTag("Bot");
 	shot=cannon.FindChild("ShootPoint");
-	//target=othertargets[0];
-	n_targets= othertargets.Length;
 	
 }
 
@@ -30,21 +28,10 @@ function Update(){
 		target.position.y = target.position.y + aimError;
 		target.position.z = target.position.z + aimError;
 		cannon.rotation = Quaternion.Lerp(cannon.rotation,Quaternion.LookRotation(target.position-cannon.position),Time.deltaTime*rotatespeed);
-		if(distance <= range && Time.time >= nextFire){
-			Shoot();
+		if(distance <= range && Time.time >= nextFire && bullet == null){
+			Shoot();						
 		}
-	}//else{
-		//while(target == null){
-			//target=GameObject.FindGameObjectWithTag("Bot").transform;
-		//}
-		/*i=0;
-		while(target == null && i<othertargets.Length){
-			if (othertargets[i] != null && transform.collider.bounds.Contains(othertargets[i].transform.position)){
-				target=othertargets[i].transform;
-			}
-			i++;			
-		}*/	
-	//}
+	}
 }
 
 
@@ -52,32 +39,15 @@ function Update(){
 function OnTriggerEnter(coll: Collider){
 	//Si es detecta un objecte amb l'etiqueta "Bot"
 	if(target == null && coll.tag == "Bot"){
-		target=coll.gameObject.transform;
-
-	}/*else if (target != null && coll.tag == "Bot"){
-		queued=false;
-		var i=0;
-		while(!queued && i<othertargets.Length){
-			if(othertargets[i] == null){
-				othertargets[i] = coll.gameObject;
-				queued = true;
-			}
-			i++;
-		}
-	}*/
+		target=coll.gameObject.transform;		
+	}
 }
 
 function OnTriggerStay(coll: Collider){	
 	if(target == null && coll.tag == "Bot"){
 		target=coll.gameObject.transform;
-		/*var i=0;
-		while(target == null && i<othertargets.Length) {
-			if (othertargets[i] != null && transform.collider.bounds.Contains(othertargets[i].transform.position)){
-				target=othertargets[i].transform;
-			}
-			i++;
-		}*/
-	}
+		target = GameObject.FindGameObjectWithTag("Bot").transform;
+	}	
 }
 
 function OnTriggerExit(coll: Collider){
@@ -107,5 +77,6 @@ function CalculateAimError(){
 
 function Shoot(){
 	nextFire = Time.time + fireRate;
-    Instantiate(rocket,shot.position,shot.rotation);
+    bullet=Instantiate(rocket,shot.position,shot.rotation);        
+    
 }

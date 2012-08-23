@@ -38,7 +38,7 @@ function Update () {
 			phasetwo.enabled = true;
 		}
 	}else{
-		Application.LoadLevel("Menu");
+		Application.LoadLevel(1);
 		//Debug.Log("Game Over.");
 		if(creation != null)
 			creation=null;
