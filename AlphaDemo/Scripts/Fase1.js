@@ -108,7 +108,8 @@ function Update(){
 					MovePreview(hit);	
 			}
 		}
-	//}else if(towerFaseEnd){		
+	}else if(towerFaseEnd){		
+		DestroyPreview();
 	 	
 	}else{
 		if(preview != null)
@@ -139,7 +140,7 @@ function CreatePreview(hit:RaycastHit){
 			return;			
 		}
 	}
-	preview = Instantiate(solid,Vector3(hit.point.x,1,hit.point.z), transform.rotation);
+	preview = Instantiate(solid,Vector3(hit.point.x,0,hit.point.z), transform.rotation);
 	vista_previa=true;
 }
 

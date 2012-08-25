@@ -1,9 +1,10 @@
+import System.Collections.Generic;
 var rocket: Rigidbody;
 var rotatespeed : int;
 var cannon: Transform;
 var shot : Transform;
 var target: Transform;
-var othertargets : GameObject[];
+var scan : List.<Rigidbody>;
 var fireRate = 0.5f;
 //private var rotationDir : Quaternion;
 //private var nextMoveTime : float; 
@@ -16,15 +17,18 @@ private var errorAmount : float = 1f;
 private var bullet : Rigidbody;
 
 function Start(){
-	if(Game.fase2){
-		var scan = GameObject.Find("Creation").GetComponent(Fase2).wave;
-	}
+	
 	shot=cannon.FindChild("ShootPoint");
 	//Debug.Log("Value of scan : "+scan);
 	
 }
 
-function Update(){	
+function Update(){
+	if(scan == null){
+		if(Game.fase2 && GameObject.Find("Creation").GetComponent(Fase2).ready){
+			ScanBots();
+		}
+	}	
 	if(target){
 		distance = Vector3.Distance(transform.position,target.position);
 		target.position.x = target.position.x + aimError;
@@ -56,8 +60,7 @@ function OnTriggerStay(coll: Collider){
 function OnTriggerExit(coll: Collider){
 	//Si l'objectiu surt dels limits
 	if(coll.gameObject.transform == target){
-		target = null;
-		target = GameObject.FindGameObjectWithTag("Bot").transform;
+		target = null;		
 		/*i=0;
 		while(target == null && i<othertargets.Length){
 			if (othertargets[i] != null && transform.collider.bounds.Contains(othertargets[i].transform.position)){
@@ -66,6 +69,10 @@ function OnTriggerExit(coll: Collider){
 			i++;			
 		}*/
 	}
+}
+
+function ScanBots(){
+	scan = GameObject.Find("Creation").GetComponent(Fase2).wave;
 }
 
 function CalculateAimError(){
@@ -80,6 +87,6 @@ function CalculateAimError(){
 
 function Shoot(){
 	nextFire = Time.time + fireRate;
-    bullet=Instantiate(rocket,shot.position,shot.rotation);        
+    Instantiate(rocket,shot.position,shot.rotation);        
     
 }

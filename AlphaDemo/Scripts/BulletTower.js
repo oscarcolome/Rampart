@@ -1,7 +1,9 @@
-#pragma strict
+
+import System.Collections.Generic;
 private var speed : int = 15;
 private var range : float = 30f;
 private var distance : float;
+
 
 
 function Update () {
@@ -14,9 +16,10 @@ function Update () {
 
 function OnCollisionEnter(hit : Collision){
 	if(hit.collider.tag == "Bot"){
+		var scan = GameObject.Find("Creation").GetComponent(Fase2).wave;
+		scan.Remove(hit.gameObject.rigidbody);
 		Destroy(hit.gameObject);		
-		Destroy(gameObject);
-		var scan = GameObject.Find("Creation").GetComponent(Fase2);		
+		Destroy(gameObject);			
 	}
 	
 		//hit.transform.position

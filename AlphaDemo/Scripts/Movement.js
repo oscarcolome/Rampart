@@ -20,12 +20,12 @@ private var hit : RaycastHit;
 var rotatespeed : int;
 var shot : Transform;
 private var piece : Rigidbody;
-private var bulletbot : Rigidbody;
 
 function Start(){
 	//waypoints = GameObject.FindGameObjectsWithTag("Wall");
 	//if(waypoints == null)
-		waypoints = GameObject.Find("Creation").GetComponent(Fase1).cubesPlaced;		
+		waypoints = GameObject.Find("Creation").GetComponent(Fase1).cubesPlaced;
+		
 		targets=true;
 		count = waypoints.Count;		
 		piece=waypoints[Random.Range(0,waypoints.Count)];		
@@ -58,13 +58,13 @@ function Update () {
 			endPoint.position.y = endPoint.position.y + aimError;
 			endPoint.position.z = endPoint.position.z + aimError;
 			transform.rotation = Quaternion.Lerp(transform.rotation,Quaternion.LookRotation(endPoint.position-transform.position),Time.deltaTime*rotatespeed);
-			if(Time.time >= nextFire && bulletbot == null){
+			if(Time.time >= nextFire){
 				Shoot();				
-			}else if(bulletbot != null){	
-				if(bulletbot.detectCollisions){
+			}/*else if(bulletbot != null){	
+				if(bulletbot.transform.){
 					waypoints.Remove(piece);
 				}
-			}
+			}*/
 			/*Destroy(endPoint.gameObject);
 			count = count -1;
 			/*if(targets){
@@ -81,7 +81,7 @@ function Update () {
 }
 
 function findWayPoint(){
-	while(piece != null){
+	while(endPoint == null){
 		piece=waypoints[Random.Range(0,waypoints.Count)];
 		if(piece != null){		
 			endPoint=piece.transform.GetChild(Random.Range(0,3));
@@ -95,5 +95,5 @@ function CalculateAimError(){
 
 function Shoot(){
 	nextFire = Time.time + fireRate;
-    bulletbot=Instantiate(rocket,shot.position,shot.rotation);
+    Instantiate(rocket,shot.position,shot.rotation);
 }

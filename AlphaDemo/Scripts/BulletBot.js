@@ -1,6 +1,9 @@
+import System.Collections.Generic;
+
 private var speed : int = 15;
 private var range : float = 20f;
 private var distance : float;
+private var pieces : List.<Rigidbody>;
 
 function Update () {
 	transform.Translate(Vector3.forward * Time.deltaTime * speed);
@@ -16,10 +19,12 @@ function OnCollisionEnter(hit : Collision){
 		
 		if(a.boolmatrix[hit.transform.position.z][hit.transform.position.x] > 0){
 			if(a.boolmatrix[hit.transform.position.z][hit.transform.position.x] == 1){			
-				Destroy(hit.transform.gameObject);
+				pieces = GameObject.Find("Creation").GetComponent(Fase1).cubesPlaced;				
+				pieces.Remove(hit.gameObject.rigidbody);
+				Destroy(hit.gameObject);
 				a.boolmatrix[hit.transform.position.z][hit.transform.position.x] = 0;
 			}else{
-				a.boolmatrix[hit.transform.position.z][hit.transform.position.x] = a.boolmatrix[hit.transform.position.z][hit.transform.position.x] -1;	
+				a.boolmatrix[hit.transform.position.z][hit.transform.position.x] = a.boolmatrix[hit.transform.position.z][hit.transform.position.x] -1;					
 			}
 		}
 		Destroy(this.gameObject);

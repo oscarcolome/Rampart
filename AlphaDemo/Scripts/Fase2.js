@@ -1,6 +1,7 @@
-#pragma strict
-var enemy : Transform;
-var wave = new Array();
+
+import System.Collections.Generic;
+var enemy : Rigidbody;
+var wave = new List.<Rigidbody>();
 var numberenemies : int;
 var spawnPoint : Transform[];
 
@@ -11,15 +12,18 @@ private var roundedRestSeconds : int;
 var countDownSeconds : int;
 private var remainingSeconds : int;	
 private var battle : boolean = false;
+var ready : boolean =false;
 
 
 function Start () {
 	for(var i=0;i<numberenemies;i++){
 		var pos: Transform = spawnPoint[Random.Range(0, spawnPoint.length)];
-		var bot : Transform = Instantiate(enemy,pos.position,transform.rotation);
+		var bot : Rigidbody = Instantiate(enemy,pos.position,transform.rotation);
 		wave.Add(bot);
 	}
-	remainingSeconds = Time.time+15;	
+	ready=true;
+	remainingSeconds = Time.time+15;
+		
 }
 
 function Update () {
