@@ -1,8 +1,10 @@
+import System.Collections.Generic;
 
 private var restSeconds : int = 1;
 private var displaySeconds : int;
 private var displayMinutes : int;
 private var roundedRestSeconds : int;
+
 private var isred : boolean = false;
 
 private var screenPos;
@@ -12,10 +14,11 @@ private var hit : RaycastHit;
 
 private var preview : Rigidbody;
 private var solid : Rigidbody;
-private var cubesPlaced = new ArrayList();
-private var towersPlaced = new ArrayList();
 
-static var boolmatrix: Array;
+var cubesPlaced = new List.<Rigidbody>();
+var towersPlaced = new List.<Rigidbody>();
+
+var boolmatrix: Array;
 var figura: Array;
 
 var countDownSeconds : int;
@@ -24,7 +27,6 @@ private var remainingSeconds : int;
 private var xgrid:int;
 private var zgrid:int;
 
-private var gridList =new ArrayList();
 var cubes : Rigidbody[];
 var tower : Rigidbody;
 var tile : Transform;
@@ -39,10 +41,9 @@ private var castle : GameObject;
 private var stone : Transform;
 private var hitwall : RaycastHit;
 private var yaxis = 50;
-private var nextTile : Transform;
 private var valor : int = 0;
 private var result: int;
-private var ntowers: int = 2;
+private var ntowers: int =3;
 
 //private var steps = 0;
 
@@ -85,10 +86,12 @@ function Update(){
 						if(colocarElement(figura,(GridGenerator.terrainheight-hit.point.z),(hit.point.x))){
 							solid=DestroyPreview();
 							var muralla : Rigidbody = Instantiate(solid,Vector3(hit.point.x,0,hit.point.z), transform.rotation);
-							if(solid == tower) 
+							if(solid == tower){							
 								towersPlaced.Add(muralla);
-							else
+								
+							}else{
 								cubesPlaced.Add(muralla);
+							}
 								
 						}
 					}
@@ -98,6 +101,7 @@ function Update(){
 			}
 		}else{
 			if(Physics.Raycast(ray,hit)){
+				//Debug.Log("I hit at : "+hit.point.x+" tag of "+hit.transform.tag);
 				if(!vista_previa)
 					CreatePreview(hit);
 				else
@@ -126,7 +130,7 @@ function CreatePreview(hit:RaycastHit){
 	}else{
 		if(ntowers >= 0){
 			solid = tower;			
-			ntowers=ntowers-1;
+			ntowers--;
 		}else{
 			solid = null;
 			towerFaseEnd=true;
@@ -528,8 +532,8 @@ function colocarElement(matriuNouElement:Array, posY:int, posX:int)
 					boolmatrix[posY + i][posX + j] = -2;
 				}else{
 					boolmatrix[posY + i][posX + j] = 3;
-					gridpos=GameObject.Find("Tile ("+(hit.point.x+j)+","+(hit.point.z-i)+")");
-					gridpos.renderer.material.SetColor("_Color",Color.green);
+					//gridpos=GameObject.Find("Tile ("+(hit.point.x+j)+","+(hit.point.z-i)+")");
+					//gridpos.renderer.material.SetColor("_Color",Color.green);
 				}
 			}
 		}
@@ -557,9 +561,9 @@ function OnGUI () {
 	var text : String;
 	//format del comptador
 	if(towerFaseStart)
-    	text = String.Format ("Torres: Temps restant: {0:00}:{1:00}", displayMinutes, displaySeconds);
+    	text = String.Format ("Towers: Time remaining: {0:00}:{1:00}", displayMinutes, displaySeconds);
     else
-    	text = String.Format ("Enmurallar: Temps restant: {0:00}:{1:00}", displayMinutes, displaySeconds);
+    	text = String.Format ("Wall the castle: Time remaining: {0:00}:{1:00}", displayMinutes, displaySeconds);
     	
     //display messages or whatever here -->do stuff based on your timer
     //if (restSeconds == 10) {
@@ -582,7 +586,7 @@ function OnGUI () {
     	towerFaseEnd = true;
     	Game.fase1 = true;
         Game.fase2 = false;
-        GUI.Label (Rect (100, 10, 300, 40), "Watch the battle");
+        //GUI.Label (Rect (100, 10, 300, 40), "Watch the battle");
     }else {
     	GUI.Label (Rect (100, 10, 300, 40), text);	
     } 
@@ -601,8 +605,6 @@ function checkSafeZone(posx : int , posz : int) : int{
 	
 	boolmatrix[posz][posx] = 2;
 	valor = boolmatrix[posz][posx];
-	//foundtile = GameObject.Find("Tile ("+posx+","+(100-posz)+")");
-	//foundtile.transform.renderer.material.SetColor("_Color",Color.yellow);
 	//west	
 	valor=checkSafeZone((posx-1),posz);
 	//east
@@ -617,17 +619,3 @@ function checkSafeZone(posx : int , posz : int) : int{
 	
 	
 }
-
-//function GenerateTiles(hit : RaycastHit){
-//	// Set Tiles
-//	xgrid = hit.point.x -((width)/2);
-//	zgrid = hit.point.z +(height/2);
-//	for(var x = (hit.point.x -((width-1)/2)); x < (hit.point.x+(width/2)); x++){
-//		for(var z = (hit.point.z-((height-1)/2)); z < (hit.point.z+(height/2)); z++){
-//			var tiler = Instantiate(tile,Vector3(x,0,z),Quaternion.identity);
-//			gridList.Add(tiler);
-//			tiler.name = "Tile ("+x+","+z+")";
-//		}
-//	}
-//	creat=true;
-//}

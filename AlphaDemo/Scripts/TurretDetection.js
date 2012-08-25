@@ -16,8 +16,11 @@ private var errorAmount : float = 1f;
 private var bullet : Rigidbody;
 
 function Start(){
-	othertargets = GameObject.FindGameObjectsWithTag("Bot");
+	if(Game.fase2){
+		var scan = GameObject.Find("Creation").GetComponent(Fase2).wave;
+	}
 	shot=cannon.FindChild("ShootPoint");
+	//Debug.Log("Value of scan : "+scan);
 	
 }
 
@@ -28,7 +31,7 @@ function Update(){
 		target.position.y = target.position.y + aimError;
 		target.position.z = target.position.z + aimError;
 		cannon.rotation = Quaternion.Lerp(cannon.rotation,Quaternion.LookRotation(target.position-cannon.position),Time.deltaTime*rotatespeed);
-		if(distance <= range && Time.time >= nextFire && bullet == null){
+		if(distance <= range && Time.time >= nextFire){
 			Shoot();						
 		}
 	}
@@ -46,7 +49,7 @@ function OnTriggerEnter(coll: Collider){
 function OnTriggerStay(coll: Collider){	
 	if(target == null && coll.tag == "Bot"){
 		target=coll.gameObject.transform;
-		target = GameObject.FindGameObjectWithTag("Bot").transform;
+		//target = GameObject.FindGameObjectWithTag("Bot").transform;
 	}	
 }
 

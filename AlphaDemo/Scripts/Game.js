@@ -21,8 +21,7 @@ function Update () {
 			if(creation == null)
 				creation= gameObject.AddComponent(GridGenerator);
 			creation.enabled = true;		
-		}else if(!fase1){
-//			creation.disabled=true;
+		}else if(!fase1){			
 			creation.enabled=false;
 			phaseone = GetComponentInChildren(Fase1);
 			if(phaseone == null)	

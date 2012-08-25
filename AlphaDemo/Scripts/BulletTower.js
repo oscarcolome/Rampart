@@ -16,6 +16,7 @@ function OnCollisionEnter(hit : Collision){
 	if(hit.collider.tag == "Bot"){
 		Destroy(hit.gameObject);		
 		Destroy(gameObject);
+		var scan = GameObject.Find("Creation").GetComponent(Fase2);		
 	}
 	
 		//hit.transform.position

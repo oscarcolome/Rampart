@@ -1,3 +1,4 @@
+import System.Collections.Generic;
 var fireRate = 0.5f;
 //private var rotationDir : Quaternion;
 //private var nextMoveTime : float; 
@@ -6,7 +7,7 @@ var rocket: Rigidbody;
 private var errorAmount : float = 1f;
 private var aimError : float;
 //Punt de sortida
-var waypoints : GameObject[];
+var waypoints : List.<Rigidbody>;
 var startPoint : Transform;
 //Punt d'arribada
 private var endPoint : Transform;
@@ -18,18 +19,19 @@ private var distance;
 private var hit : RaycastHit;
 var rotatespeed : int;
 var shot : Transform;
+private var piece : Rigidbody;
 private var bulletbot : Rigidbody;
 
 function Start(){
 	//waypoints = GameObject.FindGameObjectsWithTag("Wall");
 	//if(waypoints == null)
-		waypoints = GameObject.FindGameObjectsWithTag("Wall");
+		waypoints = GameObject.Find("Creation").GetComponent(Fase1).cubesPlaced;		
 		targets=true;
-		count = waypoints.Length;
-		
-		endPoint=waypoints[Random.Range(0,waypoints.length)].transform;
+		count = waypoints.Count;		
+		piece=waypoints[Random.Range(0,waypoints.Count)];		
 		//Debug.Log("Number of childs: "+endPoint.transform.GetChildCount());
-		endPoint = endPoint.GetChild(Random.Range(0,3));
+		endPoint = piece.transform.GetChild(Random.Range(0,3));
+		//Debug.Log("Value of endPoint now : "+endPoint);
 		
 		
 		
@@ -58,8 +60,11 @@ function Update () {
 			transform.rotation = Quaternion.Lerp(transform.rotation,Quaternion.LookRotation(endPoint.position-transform.position),Time.deltaTime*rotatespeed);
 			if(Time.time >= nextFire && bulletbot == null){
 				Shoot();				
-			}	
-						
+			}else if(bulletbot != null){	
+				if(bulletbot.detectCollisions){
+					waypoints.Remove(piece);
+				}
+			}
 			/*Destroy(endPoint.gameObject);
 			count = count -1;
 			/*if(targets){
@@ -68,6 +73,7 @@ function Update () {
 				findWayPoint();
 			}*/
 		}
+		
 	}else{
 		//transform.Translate(Vector3.forward* Time.deltaTime* 2);
 		findWayPoint();
@@ -75,13 +81,10 @@ function Update () {
 }
 
 function findWayPoint(){
-	for(i=0;i<waypoints.Length;i++){
-		if(waypoints[i] != null){
-			endPoint = waypoints[i].transform;	
-		}else{
-			if(count == 0){
-				targets=false;	
-			}
+	while(piece != null){
+		piece=waypoints[Random.Range(0,waypoints.Count)];
+		if(piece != null){		
+			endPoint=piece.transform.GetChild(Random.Range(0,3));
 		}
 	}
 }
