@@ -7,7 +7,7 @@ var rocket: Rigidbody;
 private var errorAmount : float = 1f;
 private var aimError : float;
 //Punt de sortida
-var waypoints : List.<Rigidbody>;
+//var waypoints : List.<Rigidbody>;
 var startPoint : Transform;
 //Punt d'arribada
 private var endPoint : Transform;
@@ -20,17 +20,19 @@ private var hit : RaycastHit;
 var rotatespeed : int;
 var shot : Transform;
 private var piece : Rigidbody;
+private var fort : Transform;
 
 function Start(){
 	//waypoints = GameObject.FindGameObjectsWithTag("Wall");
 	//if(waypoints == null)
-		waypoints = GameObject.Find("Creation").GetComponent(Fase1).cubesPlaced;
-		
-		targets=true;
-		count = waypoints.Count;		
-		piece=waypoints[Random.Range(0,waypoints.Count)];		
+		//waypoints = GameObject.Find("Creation").GetComponent(Fase1).cubesPlaced;
+	fort = GameObject.Find("CubesList").transform;
+	endPoint = fort.GetChild(Random.Range(0,fort.childCount)).GetChild(Random.Range(0,3));
+		//targets=true;
+		//count = waypoints.Count;		
+		//piece=waypoints[Random.Range(0,waypoints.Count)];		
 		//Debug.Log("Number of childs: "+endPoint.transform.GetChildCount());
-		endPoint = piece.transform.GetChild(Random.Range(0,3));
+		//endPoint = piece.transform.GetChild(Random.Range(0,3));
 		//Debug.Log("Value of endPoint now : "+endPoint);
 		
 		
@@ -56,11 +58,15 @@ function Update () {
 		}else{
 			endPoint.position.x = endPoint.position.x + aimError;
 			endPoint.position.y = endPoint.position.y + aimError;
-			endPoint.position.z = endPoint.position.z + aimError;
-			transform.rotation = Quaternion.Lerp(transform.rotation,Quaternion.LookRotation(endPoint.position-transform.position),Time.deltaTime*rotatespeed);
-			if(Time.time >= nextFire){
-				Shoot();				
-			}/*else if(bulletbot != null){	
+			endPoint.position.z = endPoint.position.z + aimError;			
+			if(Vector3.Angle((endPoint.position-transform.position),transform.forward) <.1){
+				if(Time.time >= nextFire){
+					Shoot();				
+				}
+			}else{
+				transform.rotation = Quaternion.Lerp(transform.rotation,Quaternion.LookRotation(endPoint.position-transform.position),Time.deltaTime*rotatespeed);					
+			}
+			/*else if(bulletbot != null){	
 				if(bulletbot.transform.){
 					waypoints.Remove(piece);
 				}
@@ -81,11 +87,9 @@ function Update () {
 }
 
 function findWayPoint(){
-	while(endPoint == null){
-		piece=waypoints[Random.Range(0,waypoints.Count)];
-		if(piece != null){		
-			endPoint=piece.transform.GetChild(Random.Range(0,3));
-		}
+	while(endPoint == null){		
+		
+			endPoint=fort.GetChild(Random.Range(0,fort.childCount)).GetChild(Random.Range(0,3));
 	}
 }
 

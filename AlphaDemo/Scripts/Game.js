@@ -10,19 +10,22 @@ static var fase3 : boolean = false;
 static var startingphase : boolean = false;
 private var creation : GridGenerator = null;
 private var phaseone : Fase1 = null;
-private var phasetwo : Fase2 = null;
+private var phasetwo : Fase3 = null;
 
 
 function Update () {
 
 	if(!over){
-		if(!startingphase){
+		/*if(!startingphase){
 			creation = GetComponentInChildren(GridGenerator);
 			if(creation == null)
 				creation= gameObject.AddComponent(GridGenerator);
 			creation.enabled = true;		
-		}else if(!fase1){			
-			creation.enabled=false;
+		}else */if(!fase1){
+			if(phasetwo != null && phasetwo.enabled){
+				phasetwo.enabled=false;
+			}			
+			//creation.enabled=false;
 			phaseone = GetComponentInChildren(Fase1);
 			if(phaseone == null)	
 				phaseone = gameObject.AddComponent(Fase1);
@@ -31,13 +34,13 @@ function Update () {
 				over=true;	
 		}else if(!fase2){
 			phaseone.enabled = false;
-			phasetwo = GetComponentInChildren(Fase2);
+			phasetwo = GetComponentInChildren(Fase3);
 			if(phasetwo == null)	
-				phasetwo = gameObject.AddComponent(Fase2);
+				phasetwo = gameObject.AddComponent(Fase3);
 			phasetwo.enabled = true;
 		}
 	}else{
-		Application.LoadLevel(1);
+		Application.LoadLevel(0);
 		//Debug.Log("Game Over.");
 		if(creation != null)
 			creation=null;
@@ -46,6 +49,7 @@ function Update () {
 		this.enabled=false;		
 		return;
 	}
+	
 	/*if(!fase1){	
 		phaseone = GetComponentInChildren(Fase1);
 		if(phaseone == null)	

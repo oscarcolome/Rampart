@@ -7,6 +7,11 @@ private var roundedRestSeconds : int;
 
 private var isred : boolean = false;
 
+private var vista_previa : boolean;
+//private var creat : boolean = false;
+var towerFaseEnd : boolean = false;
+var towerFaseStart : boolean = false;
+
 private var screenPos;
 private var ray : Ray;
 private var hit : RaycastHit;
@@ -15,10 +20,10 @@ private var hit : RaycastHit;
 private var preview : Rigidbody;
 private var solid : Rigidbody;
 
-var cubesPlaced = new List.<Rigidbody>();
-var towersPlaced = new List.<Rigidbody>();
+private var cubesPlaced :Transform;
 
-var boolmatrix: Array;
+
+
 var figura: Array;
 
 var countDownSeconds : int;
@@ -28,31 +33,57 @@ private var xgrid:int;
 private var zgrid:int;
 
 var cubes : Rigidbody[];
-var tower : Rigidbody;
-var tile : Transform;
+//var tile : Transform;
 //var width : int;
 //var height : int;
 
-private var vista_previa : boolean;
-private var creat = false;
-private var towerFaseEnd =false;
-private var towerFaseStart=false;
+
 private var castle : GameObject;
 private var stone : Transform;
-private var hitwall : RaycastHit;
-private var yaxis = 50;
+//private var hitwall : RaycastHit;
+//private var yaxis = 50;
 private var valor : int = 0;
 private var result: int;
-private var ntowers: int =3;
+
+private var fase0;
+//private var tiles;
+
 
 //private var steps = 0;
 
+/*function Awake(){
+	DontDestroyOnLoad(transform.gameObject);
+}*/
+
 function Start(){
-	remainingSeconds = countDownSeconds;
-	GenerateHashMap();
-	castle=GameObject.FindGameObjectWithTag("Fortress");
-	//Debug.Log("Castle value "+castle);	
-	MarkCastle();		
+	
+	remainingSeconds = countDownSeconds;	
+	castle = GameObject.FindGameObjectWithTag("Fortress");
+	fase0 = GameObject.Find("TileArray").GetComponent(Persistent);	
+	cubesPlaced = GameObject.Find("CubesList").transform;	
+	MarkCastle();
+			
+}
+
+function MarkCastle(){
+	stone = castle.transform;	
+	var xgridless : int = stone.position.x - (stone.localScale.x/2);
+	var zgridless : int = stone.position.z - (stone.localScale.z/2);
+	var xgridmore : int = stone.position.x + (stone.localScale.x/2);
+	var zgridmore : int = stone.position.z + (stone.localScale.z/2);
+	
+	xgridless = Mathf.Round(xgridless);
+	zgridless = Mathf.Round(zgridless);
+	xgridmore = Mathf.Round(xgridmore);
+	zgridmore = Mathf.Round(zgridmore);
+	
+	for(var x=xgridless; x<xgridmore+1;x++){		
+		for(var z=zgridless; z<zgridmore+1;z++){	
+			//Debug.Log("Value of boolmatrix"+fase0.boolmatrix[z][x]);	
+			fase0.boolmatrix[z][x] = 1;			
+		}
+	}
+	//creat=true;
 }
 
 //Colocar el contorn de la muralla.
@@ -86,13 +117,9 @@ function Update(){
 						if(colocarElement(figura,(GridGenerator.terrainheight-hit.point.z),(hit.point.x))){
 							solid=DestroyPreview();
 							var muralla : Rigidbody = Instantiate(solid,Vector3(hit.point.x,0,hit.point.z), transform.rotation);
-							if(solid == tower){							
-								towersPlaced.Add(muralla);
-								
-							}else{
-								cubesPlaced.Add(muralla);
-							}
-								
+							//if(solid == tower){							
+								muralla.transform.parent = cubesPlaced;
+
 						}
 					}
 				}else{
@@ -107,39 +134,28 @@ function Update(){
 				else
 					MovePreview(hit);	
 			}
-		}
-	}else if(towerFaseEnd){		
-		DestroyPreview();
-	 	
+		}		
 	}else{
 		if(preview != null)
 			DestroyPreview();			
-			result=checkSafeZone(castle.transform.position.x,castle.transform.position.z);		
+		result=checkSafeZone(castle.transform.position.x,castle.transform.position.z);		
 		if(result==2){
 			ConvertirMuralla();
 			MarkCastle();
-			Game.fortSuccess=true;	
-			Game.fase1timeout=true;
-
+			Application.LoadLevel(3);
+		}else{
+			GameObject.Destroy(fase0);
+			GameObject.Destroy(cubesPlaced.gameObject);
+			GameObject.Destroy(GameObject.Find("TileArray"));
+			GameObject.Destroy(GameObject.Find("Fortress"));
+			Application.LoadLevel(0);
 		}
 	}
 }
 
 function CreatePreview(hit:RaycastHit){
-	if(!towerFaseStart){
-		solid = cubes[Random.Range(0,cubes.length)];		
-	}else{
-		if(ntowers >= 0){
-			solid = tower;			
-			ntowers--;
-		}else{
-			solid = null;
-			towerFaseEnd=true;
-			expandRadius();
-			remainingSeconds=0;
-			return;			
-		}
-	}
+	//if(!towerFaseStart){
+	solid = cubes[Random.Range(0,cubes.length)];		
 	preview = Instantiate(solid,Vector3(hit.point.x,0,hit.point.z), transform.rotation);
 	vista_previa=true;
 }
@@ -148,57 +164,15 @@ function MovePreview(hit:RaycastHit){
     preview.transform.position = hit.transform.position;
 }
 
-function expandRadius(){
-	var turretes : Rigidbody;
-	for(turretes in towersPlaced){
-		//Debug.Log(peces.tag);
-		turretes.GetComponent(SphereCollider).collider.radius = 20;		
-	}
-}
-
 function DestroyPreview(){
 	Destroy(preview.gameObject);
 	vista_previa=false;
 	return solid;
 }
 
-
-function GenerateHashMap(){
-	
-	boolmatrix = new Array(GridGenerator.terrainwidth);
-	for(var i=0;i<boolmatrix.length;i++){
-		boolmatrix[i]=new Array(GridGenerator.terrainheight);
-	}
-	for(i=0;i<boolmatrix.length;i++){
-		for(var j=0;j<boolmatrix[i].length;j++){
-			boolmatrix[i][j]=0;
-		}
-	}		
-}
-function MarkCastle(){
-	stone = castle.transform;	
-	var xgridless : int = stone.position.x - (stone.localScale.x/2);
-	var zgridless : int = stone.position.z - (stone.localScale.z/2);
-	var xgridmore : int = stone.position.x + (stone.localScale.x/2);
-	var zgridmore : int = stone.position.z + (stone.localScale.z/2);
-	
-	xgridless = Mathf.Round(xgridless);
-	zgridless = Mathf.Round(zgridless);
-	xgridmore = Mathf.Round(xgridmore);
-	zgridmore = Mathf.Round(zgridmore);
-	
-	for(var x=xgridless; x<xgridmore+1;x++){		
-		for(var z=zgridless; z<zgridmore+1;z++){	
-			//Debug.Log("Value of x "+x+" z "+z);	
-			boolmatrix[z][x] = 1;			
-		}
-	}
-}
-
 function ConvertirMuralla(){
-	var peces : Rigidbody;
+	var peces : Transform;
 	for(peces in cubesPlaced){
-		//Debug.Log(peces.tag);
 		var sons :Transform;
 		for (sons in peces.GetComponentInChildren(Transform)){
 			sons.renderer.material.SetColor("_Color", Color.blue);
@@ -210,7 +184,6 @@ function ConvertirMuralla(){
 
 function ComprovarElement(element:Rigidbody){
 	switch (element.tag){
-		case ("Turret"):
 							
 		case ("Cub"):
 			//Debug.Log("És el Cub");
@@ -502,20 +475,20 @@ function colocarElement(matriuNouElement:Array, posY:int, posX:int)
 		for(var j = 0; j < matriuNouElement[i].length; j++)
 		{
 			//Debug.Log("Value of posY+i: "+(posY+i)+" posX+j "+(posX+j));
-			//Debug.Log("Value of matriuzona: "+boolmatrix[posY+i][posX+j]);
+			//Debug.Log("Value of matriuzona: "+fase0.boolmatrix[posY+i][posX+j]);
 			// només es comprova els punts 'plens' del nou element
 			if(matriuNouElement[i][j] == true)
 			{
 				
 				// si alguna part de la peça esta fora dels límits sortim
-				if((posY + i) < 0 || (posY + i) >= boolmatrix.length || (posX + j) < 0 || (posX + j) >= boolmatrix[0].length)
+				if((posY + i) < 0 || (posY + i) >= fase0.boolmatrix.length || (posX + j) < 0 || (posX + j) >= fase0.boolmatrix[0].length)
 					return false;
 					
 				if(towerFaseStart){
-					if(boolmatrix[posY+i][posX+j] != 2)
+					if(fase0.boolmatrix[posY+i][posX+j] != 2)
 						return false;					
 				}else{	
-					if(boolmatrix[posY + i][posX + j] != 0)
+					if(fase0.boolmatrix[posY + i][posX + j] != 0)
 						return false;
 				}				
 			}
@@ -530,9 +503,9 @@ function colocarElement(matriuNouElement:Array, posY:int, posX:int)
 			if(matriuNouElement[i][j] == true)
 			{	
 				if(towerFaseStart){			
-					boolmatrix[posY + i][posX + j] = -2;
+					fase0.boolmatrix[posY + i][posX + j] = -2;
 				}else{
-					boolmatrix[posY + i][posX + j] = 3;
+					fase0.boolmatrix[posY + i][posX + j] = 3;
 					//gridpos=GameObject.Find("Tile ("+(hit.point.x+j)+","+(hit.point.z-i)+")");
 					//gridpos.renderer.material.SetColor("_Color",Color.green);
 				}
@@ -548,7 +521,7 @@ function OnGUI () {
     //instead of when your game started
     //es resta el temps (ni idea) del temps inicial
     
-   	restSeconds = remainingSeconds - (Time.time);
+   	restSeconds = remainingSeconds - (Time.timeSinceLevelLoad);
    	//quan el comptador arriba a 0, seguira calculant valors negatius
    	//la funcio max selecciona el maxim entre 0 i el valor del temps
    	//per mantenir el comptador a 0 quan baixi a -1,-2,-3...
@@ -561,36 +534,10 @@ function OnGUI () {
     displayMinutes = roundedRestSeconds / 60; 
 	var text : String;
 	//format del comptador
-	if(towerFaseStart)
-    	text = String.Format ("Towers: Time remaining: {0:00}:{1:00}", displayMinutes, displaySeconds);
-    else
-    	text = String.Format ("Wall the castle: Time remaining: {0:00}:{1:00}", displayMinutes, displaySeconds);
+    text = String.Format ("Wall the castle: Time remaining: {0:00}:{1:00}", displayMinutes, displaySeconds);
     	
-    //display messages or whatever here -->do stuff based on your timer
-    //if (restSeconds == 10) {
-    	//diferents missatges segons el temps que queda
-        //GUI.Label (Rect (100, 10, 300, 40), "Ten Seconds Left!!");
-    //}else 
-    if (restSeconds == 0 && !towerFaseStart) {    	
-    	if(Game.fortSuccess){    		
-        	GUI.Label (Rect (100, 10, 300, 40), "Now place Towers!!");
-        	remainingSeconds=remainingSeconds*2;
-        	towerFaseStart=true;
-        }
-    }else if (restSeconds > 0 && towerFaseEnd){
-    	restSeconds=0;
-    	Game.fase1 = true;
-    	Game.fase2 = false;
-    
-    //do stuff here
-    }else if (restSeconds == 0 && towerFaseStart){
-    	towerFaseEnd = true;
-    	Game.fase1 = true;
-        Game.fase2 = false;
-        //GUI.Label (Rect (100, 10, 300, 40), "Watch the battle");
-    }else {
-    	GUI.Label (Rect (100, 10, 300, 40), text);	
-    } 
+   
+    GUI.Label (Rect (100, 10, 300, 40), text);	
        
 }
 
@@ -600,12 +547,12 @@ function checkSafeZone(posx : int , posz : int) : int{
 		return -1;
 	}
 	
-	if(boolmatrix[posz][posx] == 3 || boolmatrix[posz][posx] == 2){
+	if(fase0.boolmatrix[posz][posx] == 3 || fase0.boolmatrix[posz][posx] == 2){
 		return 2;
 	}
 	
-	boolmatrix[posz][posx] = 2;
-	valor = boolmatrix[posz][posx];
+	fase0.boolmatrix[posz][posx] = 2;
+	valor = fase0.boolmatrix[posz][posx];
 	//west	
 	valor=checkSafeZone((posx-1),posz);
 	//east

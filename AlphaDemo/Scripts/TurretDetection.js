@@ -25,9 +25,7 @@ function Start(){
 
 function Update(){
 	if(scan == null){
-		if(Game.fase2 && GameObject.Find("Creation").GetComponent(Fase2).ready){
-			ScanBots();
-		}
+		
 	}	
 	if(target){
 		distance = Vector3.Distance(transform.position,target.position);
@@ -36,7 +34,7 @@ function Update(){
 		target.position.z = target.position.z + aimError;
 		cannon.rotation = Quaternion.Lerp(cannon.rotation,Quaternion.LookRotation(target.position-cannon.position),Time.deltaTime*rotatespeed);
 		if(distance <= range && Time.time >= nextFire){
-			Shoot();						
+				Shoot();						
 		}
 	}
 }
@@ -72,7 +70,7 @@ function OnTriggerExit(coll: Collider){
 }
 
 function ScanBots(){
-	scan = GameObject.Find("Creation").GetComponent(Fase2).wave;
+	scan = GameObject.Find("Creation").GetComponent(Fase3).wave;
 }
 
 function CalculateAimError(){

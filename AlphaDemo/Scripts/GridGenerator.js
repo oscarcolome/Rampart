@@ -6,17 +6,35 @@ var height : int = 100;
 static var creat = false;
 static var terrainwidth : int;
 static var terrainheight : int;
-
-
+private var tileParent : Transform;
+var boolmatrixcreation : Array;
 
 function Start () {
-
+	tileParent=GameObject.Find("TileArray").transform;
 	GenerateTiles();	
-	//GenerateCastle();
-	//Application.LoadLevel(0);
-	
+	//GenerateCastle();	
+	GenerateHashMap();
+	//MarkCastle();
+	Persistent.boolmatrix = boolmatrixcreation;
+	Application.LoadLevel(2);	
+
 	
 }
+
+function GenerateHashMap(){
+	
+	boolmatrixcreation = new Array(GridGenerator.terrainwidth);
+	for(var i=0;i<boolmatrixcreation.length;i++){
+		boolmatrixcreation[i]=new Array(GridGenerator.terrainheight);
+	}
+	for(i=0;i<boolmatrixcreation.length;i++){
+		for(var j=0;j<boolmatrixcreation[i].length;j++){
+			boolmatrixcreation[i][j]=0;
+		}
+	}		
+}
+
+
 
 function GenerateCastle(){
 	
@@ -29,36 +47,7 @@ function GenerateCastle(){
 	//}
 	
 	//Instantiate(castle,Vector3((width/2),(stone.localScale.y/2),(height/2)),transform.rotation);
-	
 }
-
-function OnGUI () {
-
-	GUILayout.BeginArea(new Rect(0, 0, Screen.width, Screen.height));
-    GUILayout.FlexibleSpace();
-    GUILayout.BeginHorizontal();
-    GUILayout.FlexibleSpace();
-	if(creat){
-		if(GUILayout.Button("Start!")){
-			Game.startingphase=true;
-		}
-	}else{
-    	GUILayout.Label("Loading map...");
-    }
-   	/*if (GUI.Button (Rect (10,10,150,100), "Play Game")) {
-		Application.LoadLevel(0);
-	}else if (GUI.Button (Rect (200,150,150,100), "Quit")) {
-		Application.Quit();
-	}*/
-
-    GUILayout.FlexibleSpace();
-    GUILayout.EndHorizontal();
-    GUILayout.FlexibleSpace();
-    GUILayout.EndArea();
-	
-
-}
-
 
 function GenerateTiles(){
 	// Set Tiles
@@ -76,12 +65,13 @@ function GenerateTiles(){
 		for(var z = 0; z < height; z++){
 			//Debug.Log("valor de x "+x+" i z "+z);
 			var tiler = Instantiate(tile,Vector3(x,-1,z),Quaternion.identity);
-			gridList.Add(tiler);
+			tiler.parent = tileParent;
+			//gridList.Add(tiler);
 			tiler.name = "Tile ("+x+","+z+")";
 		}
 	}
 	terrainwidth = width;
 	terrainheight = height;
 	
-	creat=true;
+	
 }

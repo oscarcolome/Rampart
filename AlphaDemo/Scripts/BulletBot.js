@@ -15,11 +15,11 @@ function Update () {
 
 function OnCollisionEnter(hit : Collision){
 		
-		var a = GameObject.Find("Creation").GetComponent(Fase1);
-		
-		if(a.boolmatrix[hit.transform.position.z][hit.transform.position.x] > 0){
-			if(a.boolmatrix[hit.transform.position.z][hit.transform.position.x] == 1){			
-				pieces = GameObject.Find("Creation").GetComponent(Fase1).cubesPlaced;				
+		var a = GameObject.Find("Creation").GetComponent(GridGenerator);		
+		Debug.Log("a.boolmatrix[hit.transform.position.z][hit.transform.position.x]"+a.boolmatrix[hit.transform.position.z][hit.transform.position.x]);
+		if(a.boolmatrix[hit.transform.position.z][hit.transform.position.x] >= 0){
+			if(a.boolmatrix[hit.transform.position.z][hit.transform.position.x] <= 1){			
+				
 				pieces.Remove(hit.gameObject.rigidbody);
 				Destroy(hit.gameObject);
 				a.boolmatrix[hit.transform.position.z][hit.transform.position.x] = 0;
