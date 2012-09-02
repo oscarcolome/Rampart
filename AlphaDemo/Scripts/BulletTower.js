@@ -15,12 +15,8 @@ function Update () {
 }
 
 function OnCollisionEnter(hit : Collision){
-	if(hit.collider.tag== "Bot"){
-		var scan = GameObject.Find("BotWave");		
+	if(hit.collider.tag== "Bot"){	
 		Destroy(hit.gameObject);		
 		Destroy(gameObject);			
 	}
-	
-		//hit.transform.position
-	//}
 }

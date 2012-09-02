@@ -10,7 +10,7 @@ private var aimError : float;
 //var waypoints : List.<Rigidbody>;
 var startPoint : Transform;
 //Punt d'arribada
-private var endPoint : Transform;
+var endPoint : Transform;
 var last : int;
 var count: int;
 private var targets: boolean;
@@ -21,13 +21,14 @@ var rotatespeed : int;
 var shot : Transform;
 private var piece : Rigidbody;
 private var fort : Transform;
+private var bullet : Rigidbody;
 
 function Start(){
 	//waypoints = GameObject.FindGameObjectsWithTag("Wall");
 	//if(waypoints == null)
 		//waypoints = GameObject.Find("Creation").GetComponent(Fase1).cubesPlaced;
 	fort = GameObject.Find("CubesList").transform;
-	endPoint = fort.GetChild(Random.Range(0,fort.childCount)).GetChild(Random.Range(0,3));
+	endPoint = fort.GetChild(Random.Range(0,fort.childCount));
 		//targets=true;
 		//count = waypoints.Count;		
 		//piece=waypoints[Random.Range(0,waypoints.Count)];		
@@ -41,6 +42,12 @@ function Start(){
 }
 
 function Update () {
+
+	if(Application.loadedLevel == 2 || Application.loadedLevel == 3 && this.enabled){
+		this.enabled=false;
+	}else{
+		this.enabled=true;
+	}
 
 	if(endPoint){
 		//Es calcula la distància entre el punt de sortida i el d'arribada		
@@ -99,5 +106,6 @@ function CalculateAimError(){
 
 function Shoot(){
 	nextFire = Time.time + fireRate;
-    Instantiate(rocket,shot.position,shot.rotation);
+    bullet=Instantiate(rocket,shot.position,shot.rotation);
+    bullet.transform.parent = transform;
 }

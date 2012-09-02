@@ -17,8 +17,8 @@ private var ray : Ray;
 private var hit : RaycastHit;
 
 
-private var preview : Rigidbody;
-private var solid : Rigidbody;
+private var stone_preview : Rigidbody;
+private var solid_stone : Rigidbody;
 
 private var cubesPlaced :Transform;
 
@@ -46,6 +46,7 @@ private var valor : int = 0;
 private var result: int;
 
 private var fase0;
+private var colliders : boolean = false;
 //private var tiles;
 
 
@@ -62,7 +63,19 @@ function Start(){
 	fase0 = GameObject.Find("TileArray").GetComponent(Persistent);	
 	cubesPlaced = GameObject.Find("CubesList").transform;	
 	MarkCastle();
+	//ResetSafeZone();
+	
 			
+}
+
+function ResetSafeZone(){
+	for(var i=0;i<fase0.boolmatrix.length;i++){
+		for(var j=0;j<fase0.boolmatrix[i].length;j++){			
+			if(fase0.boolmatrix[j][i] != 3 && fase0.boolmatrix[j][i] != 1 && fase0.boolmatrix[j][i] != -2 ){
+				fase0.boolmatrix[j][i] = 0;
+			}
+		}
+	}
 }
 
 function MarkCastle(){
@@ -93,81 +106,90 @@ function Update(){
 	//es poden posar cubs
 	//si el temps es 0 s'han de canviar les textures dels cubs per paret
 	
+	if(!colliders){
+		ShrinkColliders();
+	}
+	
 	if(restSeconds > 0){
 		screenPos = Input.mousePosition;
 		ray = Camera.main.ScreenPointToRay(screenPos);
 		if(Input.GetButtonDown("Fire1")){
 			if(Physics.Raycast(ray,hit)){
-				//Debug.Log("I hit at: x: "+hit.point.x+" y: "+hit.point.y+" z: "+hit.point.z);
+				
+				//Debug.Log("+fase0.boolmatrix[j][i]: "+fase0.boolmatrix[hit.point.z][hit.point.x]);
 				hit.point.x = Mathf.Round(hit.point.x);
 				hit.point.y = Mathf.Round(hit.point.y);
 				hit.point.z = Mathf.Round(hit.point.z);
-				if (preview!= null){
-					var children = preview.transform.childCount;
+				if (stone_preview !=  null){
+					var children = stone_preview.transform.childCount;
 					isred=false;
 					for(var c=0;c<children;c++){
-						if(preview.transform.GetChild(c).transform.renderer.material.color == Color.red)
+						if(stone_preview.transform.GetChild(c).transform.renderer.material.color == Color.red)
 							isred=true;					
 					}
 				
 					if(!isred){
 				
-						figura=ComprovarElement(preview);
+						figura=ComprovarElement(stone_preview);
 				
 						if(colocarElement(figura,(GridGenerator.terrainheight-hit.point.z),(hit.point.x))){
-							solid=DestroyPreview();
-							var muralla : Rigidbody = Instantiate(solid,Vector3(hit.point.x,0,hit.point.z), transform.rotation);
-							//if(solid == tower){							
+							solid_stone=Destroystone_preview();
+							var muralla : Rigidbody = Instantiate(solid_stone,Vector3(hit.point.x,0,hit.point.z), transform.rotation);
+							//if(solid_stone == tower){							
 								muralla.transform.parent = cubesPlaced;
 
 						}
 					}
 				}else{
-					CreatePreview(hit);
+					Createstone_preview(hit);
 				}	
 			}
 		}else{
 			if(Physics.Raycast(ray,hit)){
 				//Debug.Log("I hit at : "+hit.point.x+" tag of "+hit.transform.tag);
 				if(!vista_previa)
-					CreatePreview(hit);
+					Createstone_preview(hit);
 				else
-					MovePreview(hit);	
+					Movestone_preview(hit);	
 			}
 		}		
 	}else{
-		if(preview != null)
-			DestroyPreview();			
+		if(stone_preview != null)
+			Destroystone_preview();			
 		result=checkSafeZone(castle.transform.position.x,castle.transform.position.z);		
 		if(result==2){
 			ConvertirMuralla();
 			MarkCastle();
-			Application.LoadLevel(3);
+			//fase0.boolmatrix = fase0.boolmatrix;
+			Application.LoadLevel("Fase 2");
 		}else{
 			GameObject.Destroy(fase0);
 			GameObject.Destroy(cubesPlaced.gameObject);
 			GameObject.Destroy(GameObject.Find("TileArray"));
 			GameObject.Destroy(GameObject.Find("Fortress"));
-			Application.LoadLevel(0);
+			GameObject.Destroy(GameObject.Find("CublesList"));
+			GameObject.Destroy(GameObject.Find("TowersList"));
+			GameObject.Destroy(GameObject.Find("BotWave"));
+			Application.LoadLevel("Menu");
 		}
 	}
 }
 
-function CreatePreview(hit:RaycastHit){
+function Createstone_preview(hit:RaycastHit){
 	//if(!towerFaseStart){
-	solid = cubes[Random.Range(0,cubes.length)];		
-	preview = Instantiate(solid,Vector3(hit.point.x,0,hit.point.z), transform.rotation);
+	solid_stone = cubes[Random.Range(0,cubes.length)];		
+	stone_preview = Instantiate(solid_stone,Vector3(hit.point.x,0,hit.point.z), transform.rotation);
 	vista_previa=true;
 }
 
-function MovePreview(hit:RaycastHit){
-    preview.transform.position = hit.transform.position;
+function Movestone_preview(hit:RaycastHit){
+    stone_preview.transform.position = hit.transform.position;
 }
 
-function DestroyPreview(){
-	Destroy(preview.gameObject);
+function Destroystone_preview(){
+	Destroy(stone_preview.gameObject);
 	vista_previa=false;
-	return solid;
+	return solid_stone;
 }
 
 function ConvertirMuralla(){
@@ -179,6 +201,14 @@ function ConvertirMuralla(){
 		}
 		peces.transform.tag = "Wall";
 	}
+}
+
+function ShrinkColliders(){
+	var range = GameObject.Find("TowersList").transform;
+	for (var alert in range){
+		alert.transform.GetComponent(SphereCollider).collider.radius = 1;
+	}
+	colliders = true;
 }
 
 
@@ -475,7 +505,7 @@ function colocarElement(matriuNouElement:Array, posY:int, posX:int)
 		for(var j = 0; j < matriuNouElement[i].length; j++)
 		{
 			//Debug.Log("Value of posY+i: "+(posY+i)+" posX+j "+(posX+j));
-			//Debug.Log("Value of matriuzona: "+fase0.boolmatrix[posY+i][posX+j]);
+			Debug.Log("Value of matriuzona: "+fase0.boolmatrix[posY+i][posX+j]);
 			// només es comprova els punts 'plens' del nou element
 			if(matriuNouElement[i][j] == true)
 			{
@@ -484,17 +514,14 @@ function colocarElement(matriuNouElement:Array, posY:int, posX:int)
 				if((posY + i) < 0 || (posY + i) >= fase0.boolmatrix.length || (posX + j) < 0 || (posX + j) >= fase0.boolmatrix[0].length)
 					return false;
 					
-				if(towerFaseStart){
-					if(fase0.boolmatrix[posY+i][posX+j] != 2)
-						return false;					
-				}else{	
-					if(fase0.boolmatrix[posY + i][posX + j] != 0)
+				
+				if(fase0.boolmatrix[posY + i][posX + j] != 0){
 						return false;
 				}				
 			}
 		}
 	}
-	var gridpos :GameObject ;
+	//var gridpos :GameObject ;
 	// si arribem aquí es pot dibuixar la peça sense comprovar res més
 	for(i = 0; i < matriuNouElement.length; i++)
 	{
@@ -502,13 +529,7 @@ function colocarElement(matriuNouElement:Array, posY:int, posX:int)
 		{
 			if(matriuNouElement[i][j] == true)
 			{	
-				if(towerFaseStart){			
-					fase0.boolmatrix[posY + i][posX + j] = -2;
-				}else{
-					fase0.boolmatrix[posY + i][posX + j] = 3;
-					//gridpos=GameObject.Find("Tile ("+(hit.point.x+j)+","+(hit.point.z-i)+")");
-					//gridpos.renderer.material.SetColor("_Color",Color.green);
-				}
+				fase0.boolmatrix[posY + i][posX + j] = 3;						
 			}
 		}
 	}

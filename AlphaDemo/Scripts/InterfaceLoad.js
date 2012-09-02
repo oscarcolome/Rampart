@@ -9,12 +9,6 @@ function OnGUI () {
 			var a = GameObject.Find("Creation").GetComponent(GridGenerator);
 			
 	}
-   	/*if (GUI.Button (Rect (10,10,150,100), "Play Game")) {
-		Application.LoadLevel(0);
-	}else if (GUI.Button (Rect (200,150,150,100), "Quit")) {
-		Application.Quit();
-	}*/
-
     GUILayout.FlexibleSpace();
     GUILayout.EndHorizontal();
     GUILayout.FlexibleSpace();

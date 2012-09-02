@@ -16,7 +16,7 @@ private var hit : RaycastHit;
 private var grid;
 private var wall;
 
-private var ntowers: int =3;
+var ntowers: int;
 
 
 function Start () {
@@ -62,7 +62,7 @@ function Update () {
 			}
 		}	
 	}else{
-		Application.LoadLevel(4);
+		Application.LoadLevel("Fase 3");
 	}
 }
 
@@ -73,9 +73,9 @@ function CreatePreview(hit:RaycastHit){
 		ntowers--;
 	}else{
 		solid = null;
-		towerFaseEnd=true;
+		//towerFaseEnd=true;
 		expandRadius();
-		remainingSeconds=0;
+		remainingSeconds = 0;
 		return;			
 	}
 	preview = Instantiate(solid,Vector3(hit.point.x,0,hit.point.z), transform.rotation);

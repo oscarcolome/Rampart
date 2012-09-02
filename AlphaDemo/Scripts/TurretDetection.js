@@ -24,9 +24,12 @@ function Start(){
 }
 
 function Update(){
-	if(scan == null){
-		
-	}	
+	if(Application.loadedLevel == 2 || Application.loadedLevel == 3  && this.enabled){
+		this.enabled=false;
+	}else{
+		this.enabled=true;
+	}
+	
 	if(target){
 		distance = Vector3.Distance(transform.position,target.position);
 		target.position.x = target.position.x + aimError;
@@ -38,8 +41,6 @@ function Update(){
 		}
 	}
 }
-
-
 
 function OnTriggerEnter(coll: Collider){
 	//Si es detecta un objecte amb l'etiqueta "Bot"
@@ -58,30 +59,13 @@ function OnTriggerStay(coll: Collider){
 function OnTriggerExit(coll: Collider){
 	//Si l'objectiu surt dels limits
 	if(coll.gameObject.transform == target){
-		target = null;		
-		/*i=0;
-		while(target == null && i<othertargets.Length){
-			if (othertargets[i] != null && transform.collider.bounds.Contains(othertargets[i].transform.position)){
-				target=othertargets[i].transform;
-			}
-			i++;			
-		}*/
+		target = null;			
 	}
-}
-
-function ScanBots(){
-	scan = GameObject.Find("Creation").GetComponent(Fase3).wave;
 }
 
 function CalculateAimError(){
 	aimError = Random.Range(-errorAmount, errorAmount);
 }
-
-/*function CalculateAim(pos : Vector3){
-	var aimpos = Vector3(pos.x,pos.y,pos.z);
-	rotationDir = Quaternion.LookRotation(cannon.position-aimpos);
-	
-}*/
 
 function Shoot(){
 	nextFire = Time.time + fireRate;

@@ -22,12 +22,15 @@ function Start () {
 		var bot : Rigidbody = Instantiate(enemy,pos.position,transform.rotation);
 		bot.transform.parent = wave;
 	}
-	ready=true;
-	remainingSeconds = Time.time+15;
+	//ready=true;
+	remainingSeconds = countDownSeconds;
 		
 }
 
 function Update () {
+	if(restSeconds == 0){
+		Application.LoadLevel("Fase 1");
+	}
 	
 }
 
@@ -55,6 +58,6 @@ function OnGUI () {
     	//diferents missatges segons el temps que queda
         //GUI.Label (Rect (100, 10, 300, 40), "Ten Seconds Left!!");
     //}else 
-    
+    GUI.Label (Rect (100, 10, 300, 40), text);	    
        
 }

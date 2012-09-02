@@ -16,7 +16,7 @@ function Start () {
 	GenerateHashMap();
 	//MarkCastle();
 	Persistent.boolmatrix = boolmatrixcreation;
-	Application.LoadLevel(2);	
+	Application.LoadLevel("Fase 1");	
 
 	
 }
