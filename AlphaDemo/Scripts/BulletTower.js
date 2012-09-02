@@ -16,8 +16,7 @@ function Update () {
 
 function OnCollisionEnter(hit : Collision){
 	if(hit.collider.tag== "Bot"){
-		var scan = GameObject.Find("BotsPlaced");
-		scan.Remove(hit.gameObject.rigidbody);
+		var scan = GameObject.Find("BotWave");		
 		Destroy(hit.gameObject);		
 		Destroy(gameObject);			
 	}
