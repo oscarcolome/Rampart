@@ -21,7 +21,7 @@ var ntowers: int;
 
 function Start () {
 	remainingSeconds = countDownSeconds;
-	grid = GameObject.Find("TileArray").GetComponent(Persistent);
+	//grid = GameObject.Find("TileArray").GetComponent(Persistent);
 	//wall = GameObject.Find("CubesList");
 	towersPlaced = GameObject.Find("TowersList").transform;
 }
@@ -34,6 +34,7 @@ function Update () {
 		if(Input.GetButtonDown("Fire1")){
 			if(Physics.Raycast(ray,hit)){
 			//Debug.Log("I hit at: x: "+hit.point.x+" y: "+hit.point.y+" z: "+hit.point.z);
+				Debug.Log("fase 2.boolmatrix[j][i]: "+Persistent.boolmatrix[hit.point.z][hit.point.x]);
 				hit.point.x = Mathf.Round(hit.point.x);
 				hit.point.y = Mathf.Round(hit.point.y);
 				hit.point.z = Mathf.Round(hit.point.z);
@@ -124,16 +125,16 @@ function placeTurret(matriuNouElement:Array, posY:int, posX:int)
 			{
 				
 				// si alguna part de la peça esta fora dels límits sortim
-				if((posY + i) < 0 || (posY + i) >= grid.boolmatrix.length || (posX + j) < 0 || (posX + j) >= grid.boolmatrix[0].length)
+				if((posY + i) < 0 || (posY + i) >= Persistent.boolmatrix.length || (posX + j) < 0 || (posX + j) >= Persistent.boolmatrix[0].length)
 					return false;
 								
-				if(grid.boolmatrix[posY + i][posX + j] != 2)
+				if(Persistent.boolmatrix[posY + i][posX + j] != 2)
 						return false;
 								
 			}
 		}
 	}
-	var gridpos :GameObject ;
+	//var gridpos :GameObject ;
 	// si arribem aquí es pot dibuixar la peça sense comprovar res més
 	for(i = 0; i < matriuNouElement.length; i++)
 	{
@@ -141,7 +142,7 @@ function placeTurret(matriuNouElement:Array, posY:int, posX:int)
 		{
 			if(matriuNouElement[i][j] == true)
 			{					
-				grid.boolmatrix[posY + i][posX + j] = -2;				
+				Persistent.boolmatrix[posY + i][posX + j] = -2;				
 			}
 		}
 	}

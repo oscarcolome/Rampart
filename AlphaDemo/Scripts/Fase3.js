@@ -1,4 +1,3 @@
-import System.Collections.Generic;
 
 var enemy : Rigidbody;
 var wave;
@@ -18,7 +17,7 @@ private var ready : boolean =false;
 function Start () {
 	wave = GameObject.Find("BotWave").transform;
 	for(var i=0;i<numberenemies;i++){
-		var pos: Transform = spawnPoint[Random.Range(0, spawnPoint.length)];
+		var pos : Transform = spawnPoint[Random.Range(0, spawnPoint.length)];
 		var bot : Rigidbody = Instantiate(enemy,pos.position,transform.rotation);
 		bot.transform.parent = wave;
 	}

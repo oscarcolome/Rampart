@@ -1,5 +1,4 @@
 
-import System.Collections.Generic;
 private var speed : int = 15;
 private var range : float = 30f;
 private var distance : float;

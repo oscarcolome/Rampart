@@ -1,4 +1,3 @@
-import System.Collections.Generic;
 
 private var speed : int = 15;
 private var range : float = 20f;
@@ -14,8 +13,8 @@ function Update () {
 
 function OnCollisionEnter(hit : Collision){
 		
-		var a = GameObject.Find("TileArray").GetComponent(Persistent);				
-		if(a.boolmatrix[hit.transform.position.z][hit.transform.position.x] >= 0){
+		//var a = GameObject.Find("TileArray").GetComponent(Persistent);				
+		/*if(a.boolmatrix[hit.transform.position.z][hit.transform.position.x] >= 0){
 			if(a.boolmatrix[hit.transform.position.z][hit.transform.position.x] <= 1){
 				var shock = transform.parent.gameObject.GetComponent(Movement).endPoint;			
 				//Debug.Log("a.boolmatrix[hit.transform.position.z][hit.transform.position.x]: "+hit.transform.position.z+" "+hit.transform.position.x);
@@ -29,7 +28,7 @@ function OnCollisionEnter(hit : Collision){
 			}else{
 				a.boolmatrix[hit.transform.position.z][hit.transform.position.x] = a.boolmatrix[hit.transform.position.z][hit.transform.position.x] -1;					
 			}
-		}
+		}*/
 		
 		Destroy(transform.gameObject);
 		//Destroy(gameObject);	

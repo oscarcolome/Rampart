@@ -1,4 +1,3 @@
-import System.Collections.Generic;
 
 private var restSeconds : int = 1;
 private var displaySeconds : int;
@@ -9,8 +8,8 @@ private var isred : boolean = false;
 
 private var vista_previa : boolean;
 //private var creat : boolean = false;
-var towerFaseEnd : boolean = false;
-var towerFaseStart : boolean = false;
+//var towerFaseEnd : boolean = false;
+//var towerFaseStart : boolean = false;
 
 private var screenPos;
 private var ray : Ray;
@@ -60,7 +59,7 @@ function Start(){
 	
 	remainingSeconds = countDownSeconds;	
 	castle = GameObject.FindGameObjectWithTag("Fortress");
-	fase0 = GameObject.Find("TileArray").GetComponent(Persistent);	
+	//fase0 = GameObject.Find("TileArray").GetComponent(Persistent);	
 	cubesPlaced = GameObject.Find("CubesList").transform;	
 	MarkCastle();
 	//ResetSafeZone();
@@ -68,15 +67,15 @@ function Start(){
 			
 }
 
-function ResetSafeZone(){
-	for(var i=0;i<fase0.boolmatrix.length;i++){
-		for(var j=0;j<fase0.boolmatrix[i].length;j++){			
-			if(fase0.boolmatrix[j][i] != 3 && fase0.boolmatrix[j][i] != 1 && fase0.boolmatrix[j][i] != -2 ){
-				fase0.boolmatrix[j][i] = 0;
+/*function ResetSafeZone(){
+	for(var i=0;i<Persistent.boolmatrix.length;i++){
+		for(var j=0;j<Persistent.boolmatrix[i].length;j++){			
+			if(Persistent.boolmatrix[j][i] != 3 && Persistent.boolmatrix[j][i] != 1 && Persistent.boolmatrix[j][i] != -2 ){
+				Persistent.boolmatrix[j][i] = 0;
 			}
 		}
 	}
-}
+}*/
 
 function MarkCastle(){
 	stone = castle.transform;	
@@ -93,7 +92,7 @@ function MarkCastle(){
 	for(var x=xgridless; x<xgridmore+1;x++){		
 		for(var z=zgridless; z<zgridmore+1;z++){	
 			//Debug.Log("Value of boolmatrix"+fase0.boolmatrix[z][x]);	
-			fase0.boolmatrix[z][x] = 1;			
+			Persistent.boolmatrix[z][x] = 1;			
 		}
 	}
 	//creat=true;
@@ -116,7 +115,7 @@ function Update(){
 		if(Input.GetButtonDown("Fire1")){
 			if(Physics.Raycast(ray,hit)){
 				
-				//Debug.Log("+fase0.boolmatrix[j][i]: "+fase0.boolmatrix[hit.point.z][hit.point.x]);
+				Debug.Log("+fase 1.boolmatrix[j][i]: "+Persistent.boolmatrix[hit.point.z][hit.point.x]);
 				hit.point.x = Mathf.Round(hit.point.x);
 				hit.point.y = Mathf.Round(hit.point.y);
 				hit.point.z = Mathf.Round(hit.point.z);
@@ -133,7 +132,7 @@ function Update(){
 						figura=ComprovarElement(stone_preview);
 				
 						if(colocarElement(figura,(GridGenerator.terrainheight-hit.point.z),(hit.point.x))){
-							solid_stone=Destroystone_preview();
+							solid_stone=DestroyStone_preview();
 							var muralla : Rigidbody = Instantiate(solid_stone,Vector3(hit.point.x,0,hit.point.z), transform.rotation);
 							//if(solid_stone == tower){							
 								muralla.transform.parent = cubesPlaced;
@@ -141,29 +140,29 @@ function Update(){
 						}
 					}
 				}else{
-					Createstone_preview(hit);
+					CreateStone_preview(hit);
 				}	
 			}
 		}else{
 			if(Physics.Raycast(ray,hit)){
 				//Debug.Log("I hit at : "+hit.point.x+" tag of "+hit.transform.tag);
 				if(!vista_previa)
-					Createstone_preview(hit);
+					CreateStone_preview(hit);
 				else
-					Movestone_preview(hit);	
+					MoveStone_preview(hit);	
 			}
 		}		
 	}else{
 		if(stone_preview != null)
-			Destroystone_preview();			
-		result=checkSafeZone(castle.transform.position.x,castle.transform.position.z);		
+			DestroyStone_preview();			
+			result=checkSafeZone(castle.transform.position.x,castle.transform.position.z);		
 		if(result==2){
 			ConvertirMuralla();
 			MarkCastle();
 			//fase0.boolmatrix = fase0.boolmatrix;
 			Application.LoadLevel("Fase 2");
 		}else{
-			GameObject.Destroy(fase0);
+			//GameObject.Destroy(fase0);
 			GameObject.Destroy(cubesPlaced.gameObject);
 			GameObject.Destroy(GameObject.Find("TileArray"));
 			GameObject.Destroy(GameObject.Find("Fortress"));
@@ -175,18 +174,18 @@ function Update(){
 	}
 }
 
-function Createstone_preview(hit:RaycastHit){
+function CreateStone_preview(hit:RaycastHit){
 	//if(!towerFaseStart){
 	solid_stone = cubes[Random.Range(0,cubes.length)];		
 	stone_preview = Instantiate(solid_stone,Vector3(hit.point.x,0,hit.point.z), transform.rotation);
 	vista_previa=true;
 }
 
-function Movestone_preview(hit:RaycastHit){
+function MoveStone_preview(hit:RaycastHit){
     stone_preview.transform.position = hit.transform.position;
 }
 
-function Destroystone_preview(){
+function DestroyStone_preview(){
 	Destroy(stone_preview.gameObject);
 	vista_previa=false;
 	return solid_stone;
@@ -505,17 +504,16 @@ function colocarElement(matriuNouElement:Array, posY:int, posX:int)
 		for(var j = 0; j < matriuNouElement[i].length; j++)
 		{
 			//Debug.Log("Value of posY+i: "+(posY+i)+" posX+j "+(posX+j));
-			Debug.Log("Value of matriuzona: "+fase0.boolmatrix[posY+i][posX+j]);
+			Debug.Log("Value of matriuzona: "+Persistent.boolmatrix[posY+i][posX+j]);
 			// només es comprova els punts 'plens' del nou element
 			if(matriuNouElement[i][j] == true)
 			{
 				
 				// si alguna part de la peça esta fora dels límits sortim
-				if((posY + i) < 0 || (posY + i) >= fase0.boolmatrix.length || (posX + j) < 0 || (posX + j) >= fase0.boolmatrix[0].length)
+				if((posY + i) < 0 || (posY + i) >= Persistent.boolmatrix.length || (posX + j) < 0 || (posX + j) >= Persistent.boolmatrix[0].length)
 					return false;
-					
-				
-				if(fase0.boolmatrix[posY + i][posX + j] != 0){
+									
+				if(Persistent.boolmatrix[posY + i][posX + j] != 0){
 						return false;
 				}				
 			}
@@ -529,7 +527,7 @@ function colocarElement(matriuNouElement:Array, posY:int, posX:int)
 		{
 			if(matriuNouElement[i][j] == true)
 			{	
-				fase0.boolmatrix[posY + i][posX + j] = 3;						
+				Persistent.boolmatrix[posY + i][posX + j] = 3;						
 			}
 		}
 	}
@@ -568,12 +566,12 @@ function checkSafeZone(posx : int , posz : int) : int{
 		return -1;
 	}
 	
-	if(fase0.boolmatrix[posz][posx] == 3 || fase0.boolmatrix[posz][posx] == 2){
+	if(Persistent.boolmatrix[posz][posx] == 3 || Persistent.boolmatrix[posz][posx] == 2){
 		return 2;
 	}
 	
-	fase0.boolmatrix[posz][posx] = 2;
-	valor = fase0.boolmatrix[posz][posx];
+	Persistent.boolmatrix[posz][posx] = 2;
+	valor = Persistent.boolmatrix[posz][posx];
 	//west	
 	valor=checkSafeZone((posx-1),posz);
 	//east

@@ -23,9 +23,9 @@ function Start () {
 
 function GenerateHashMap(){
 	
-	boolmatrixcreation = new Array(GridGenerator.terrainwidth);
+	boolmatrixcreation = new Array(width);
 	for(var i=0;i<boolmatrixcreation.length;i++){
-		boolmatrixcreation[i]=new Array(GridGenerator.terrainheight);
+		boolmatrixcreation[i]=new Array(height);
 	}
 	for(i=0;i<boolmatrixcreation.length;i++){
 		for(var j=0;j<boolmatrixcreation[i].length;j++){

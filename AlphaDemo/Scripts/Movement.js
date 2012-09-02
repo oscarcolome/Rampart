@@ -1,4 +1,4 @@
-import System.Collections.Generic;
+
 var fireRate = 0.5f;
 //private var rotationDir : Quaternion;
 //private var nextMoveTime : float; 
@@ -7,12 +7,11 @@ var rocket: Rigidbody;
 private var errorAmount : float = 1f;
 private var aimError : float;
 //Punt de sortida
-//var waypoints : List.<Rigidbody>;
 var startPoint : Transform;
 //Punt d'arribada
 var endPoint : Transform;
-var last : int;
-var count: int;
+//var last : int;
+//var count: int;
 private var targets: boolean;
 private var range = 20;
 private var distance;
@@ -94,9 +93,8 @@ function Update () {
 }
 
 function findWayPoint(){
-	while(endPoint == null){		
-		
-			endPoint=fort.GetChild(Random.Range(0,fort.childCount)).GetChild(Random.Range(0,3));
+	while(endPoint == null){				
+			endPoint=fort.GetChild(Random.Range(0,fort.childCount));
 	}
 }
 
