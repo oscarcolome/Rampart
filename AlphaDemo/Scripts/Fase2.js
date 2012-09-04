@@ -34,7 +34,7 @@ function Update () {
 		if(Input.GetButtonDown("Fire1")){
 			if(Physics.Raycast(ray,hit)){
 			//Debug.Log("I hit at: x: "+hit.point.x+" y: "+hit.point.y+" z: "+hit.point.z);
-				Debug.Log("fase 2.boolmatrix[j][i]: "+Persistent.boolmatrix[hit.point.z][hit.point.x]);
+				//Debug.Log("fase 2.boolmatrix[j][i]: "+Persistent.boolmatrix[hit.point.z][hit.point.x]);
 				hit.point.x = Mathf.Round(hit.point.x);
 				hit.point.y = Mathf.Round(hit.point.y);
 				hit.point.z = Mathf.Round(hit.point.z);
@@ -128,7 +128,7 @@ function placeTurret(matriuNouElement:Array, posY:int, posX:int)
 				if((posY + i) < 0 || (posY + i) >= Persistent.boolmatrix.length || (posX + j) < 0 || (posX + j) >= Persistent.boolmatrix[0].length)
 					return false;
 								
-				if(Persistent.boolmatrix[posY + i][posX + j] != 2)
+				if(Persistent.boolmatrix[posY + i][posX + j] != -5)
 						return false;
 								
 			}

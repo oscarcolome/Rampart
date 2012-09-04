@@ -10,6 +10,7 @@ private var aimError : float;
 var startPoint : Transform;
 //Punt d'arribada
 var endPoint : Transform;
+private var dad;
 //var last : int;
 //var count: int;
 private var targets: boolean;
@@ -27,7 +28,8 @@ function Start(){
 	//if(waypoints == null)
 		//waypoints = GameObject.Find("Creation").GetComponent(Fase1).cubesPlaced;
 	fort = GameObject.Find("CubesList").transform;
-	endPoint = fort.GetChild(Random.Range(0,fort.childCount));
+	dad = fort.GetChild(Random.Range(0,fort.childCount));
+	endPoint = dad.GetChild(Random.Range(0,dad.childCount));
 		//targets=true;
 		//count = waypoints.Count;		
 		//piece=waypoints[Random.Range(0,waypoints.Count)];		
@@ -94,7 +96,8 @@ function Update () {
 
 function findWayPoint(){
 	while(endPoint == null){				
-			endPoint=fort.GetChild(Random.Range(0,fort.childCount));
+			dad = fort.GetChild(Random.Range(0,fort.childCount));
+			endPoint = dad.GetChild(Random.Range(0,dad.childCount));
 	}
 }
 

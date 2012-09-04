@@ -16,8 +16,8 @@ private var ray : Ray;
 private var hit : RaycastHit;
 
 
-private var stone_preview : Rigidbody;
-private var solid_stone : Rigidbody;
+private var stone_preview : Transform;
+private var solid_stone : Transform;
 
 private var cubesPlaced :Transform;
 
@@ -31,7 +31,7 @@ private var remainingSeconds : int;
 private var xgrid:int;
 private var zgrid:int;
 
-var cubes : Rigidbody[];
+var cubes : Transform[];
 //var tile : Transform;
 //var width : int;
 //var height : int;
@@ -62,20 +62,20 @@ function Start(){
 	//fase0 = GameObject.Find("TileArray").GetComponent(Persistent);	
 	cubesPlaced = GameObject.Find("CubesList").transform;	
 	MarkCastle();
-	//ResetSafeZone();
+	ResetSafeZone();
 	
 			
 }
 
-/*function ResetSafeZone(){
+function ResetSafeZone(){
 	for(var i=0;i<Persistent.boolmatrix.length;i++){
 		for(var j=0;j<Persistent.boolmatrix[i].length;j++){			
-			if(Persistent.boolmatrix[j][i] != 3 && Persistent.boolmatrix[j][i] != 1 && Persistent.boolmatrix[j][i] != -2 ){
+			if(Persistent.boolmatrix[j][i] == -5 ){
 				Persistent.boolmatrix[j][i] = 0;
 			}
 		}
 	}
-}*/
+}
 
 function MarkCastle(){
 	stone = castle.transform;	
@@ -92,7 +92,7 @@ function MarkCastle(){
 	for(var x=xgridless; x<xgridmore+1;x++){		
 		for(var z=zgridless; z<zgridmore+1;z++){	
 			//Debug.Log("Value of boolmatrix"+fase0.boolmatrix[z][x]);	
-			Persistent.boolmatrix[z][x] = 1;			
+			Persistent.boolmatrix[z][x] = 1000;			
 		}
 	}
 	//creat=true;
@@ -115,30 +115,27 @@ function Update(){
 		if(Input.GetButtonDown("Fire1")){
 			if(Physics.Raycast(ray,hit)){
 				
-				Debug.Log("+fase 1.boolmatrix[j][i]: "+Persistent.boolmatrix[hit.point.z][hit.point.x]);
+				//Debug.Log("+fase 1.boolmatrix[j][i]: "+Persistent.boolmatrix[hit.point.z][hit.point.x]);
 				hit.point.x = Mathf.Round(hit.point.x);
 				hit.point.y = Mathf.Round(hit.point.y);
 				hit.point.z = Mathf.Round(hit.point.z);
 				if (stone_preview !=  null){
-					var children = stone_preview.transform.childCount;
-					isred=false;
-					for(var c=0;c<children;c++){
-						if(stone_preview.transform.GetChild(c).transform.renderer.material.color == Color.red)
-							isred=true;					
-					}
-				
-					if(!isred){
+					
 				
 						figura=ComprovarElement(stone_preview);
 				
 						if(colocarElement(figura,(GridGenerator.terrainheight-hit.point.z),(hit.point.x))){
 							solid_stone=DestroyStone_preview();
-							var muralla : Rigidbody = Instantiate(solid_stone,Vector3(hit.point.x,0,hit.point.z), transform.rotation);
+							var muralla : Transform = Instantiate(solid_stone,Vector3(hit.point.x,0,hit.point.z), transform.rotation);
+							//muralla.transform.renderer.material.SetColor("_Color",Color.blue);
+							var sons : Transform;
+							for (sons in muralla.GetComponentInChildren(Transform)){
+								sons.renderer.material.SetColor("_Color", Color.blue);
+							}
 							//if(solid_stone == tower){							
-								muralla.transform.parent = cubesPlaced;
+							muralla.transform.parent = cubesPlaced;
 
-						}
-					}
+						}					
 				}else{
 					CreateStone_preview(hit);
 				}	
@@ -155,8 +152,8 @@ function Update(){
 	}else{
 		if(stone_preview != null)
 			DestroyStone_preview();			
-			result=checkSafeZone(castle.transform.position.x,castle.transform.position.z);		
-		if(result==2){
+			result=checkSafeZone(stone.position.x,stone.position.z);		
+		if(result==-5){
 			ConvertirMuralla();
 			MarkCastle();
 			//fase0.boolmatrix = fase0.boolmatrix;
@@ -175,13 +172,13 @@ function Update(){
 }
 
 function CreateStone_preview(hit:RaycastHit){
-	//if(!towerFaseStart){
 	solid_stone = cubes[Random.Range(0,cubes.length)];		
 	stone_preview = Instantiate(solid_stone,Vector3(hit.point.x,0,hit.point.z), transform.rotation);
 	vista_previa=true;
 }
 
 function MoveStone_preview(hit:RaycastHit){
+	//hit.transform.position.y = 1;
     stone_preview.transform.position = hit.transform.position;
 }
 
@@ -211,7 +208,7 @@ function ShrinkColliders(){
 }
 
 
-function ComprovarElement(element:Rigidbody){
+function ComprovarElement(element:Transform){
 	switch (element.tag){
 							
 		case ("Cub"):
@@ -519,8 +516,7 @@ function colocarElement(matriuNouElement:Array, posY:int, posX:int)
 			}
 		}
 	}
-	//var gridpos :GameObject ;
-	// si arribem aquí es pot dibuixar la peça sense comprovar res més
+	
 	for(i = 0; i < matriuNouElement.length; i++)
 	{
 		for(j = 0; j < matriuNouElement[i].length; j++)
@@ -566,12 +562,12 @@ function checkSafeZone(posx : int , posz : int) : int{
 		return -1;
 	}
 	
-	if(Persistent.boolmatrix[posz][posx] == 3 || Persistent.boolmatrix[posz][posx] == 2){
-		return 2;
+	if(Persistent.boolmatrix[posz][posx] == 3 || Persistent.boolmatrix[posz][posx] == -5){
+		return -5;
 	}
 	
-	Persistent.boolmatrix[posz][posx] = 2;
-	valor = Persistent.boolmatrix[posz][posx];
+	Persistent.boolmatrix[posz][posx] = -5;
+	//valor = Persistent.boolmatrix[posz][posx];
 	//west	
 	valor=checkSafeZone((posx-1),posz);
 	//east
