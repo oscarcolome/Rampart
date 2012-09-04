@@ -5,8 +5,8 @@ function Start () {
 
 function Update () {
 	nChild = transform.GetChildCount();
-	if(nChild == 0){
-		Persistent.boolmatrix[transform.position.z][transform.position.x]= 0;
+	//Debug.Log(nChild);
+	if(nChild == 0){		
 		Destroy(transform.gameObject);
 	}
 }

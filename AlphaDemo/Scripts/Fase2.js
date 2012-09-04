@@ -24,6 +24,7 @@ function Start () {
 	//grid = GameObject.Find("TileArray").GetComponent(Persistent);
 	//wall = GameObject.Find("CubesList");
 	towersPlaced = GameObject.Find("TowersList").transform;
+	
 }
 
 function Update () {
@@ -142,7 +143,7 @@ function placeTurret(matriuNouElement:Array, posY:int, posX:int)
 		{
 			if(matriuNouElement[i][j] == true)
 			{					
-				Persistent.boolmatrix[posY + i][posX + j] = -2;				
+				Persistent.boolmatrix[posY + i][posX + j] = 100;				
 			}
 		}
 	}

@@ -63,14 +63,13 @@ function Start(){
 	cubesPlaced = GameObject.Find("CubesList").transform;	
 	MarkCastle();
 	ResetSafeZone();
-	
-			
+				
 }
 
 function ResetSafeZone(){
 	for(var i=0;i<Persistent.boolmatrix.length;i++){
 		for(var j=0;j<Persistent.boolmatrix[i].length;j++){			
-			if(Persistent.boolmatrix[j][i] == -5 ){
+			if(Persistent.boolmatrix[j][i] <= 0 ){
 				Persistent.boolmatrix[j][i] = 0;
 			}
 		}
@@ -501,7 +500,7 @@ function colocarElement(matriuNouElement:Array, posY:int, posX:int)
 		for(var j = 0; j < matriuNouElement[i].length; j++)
 		{
 			//Debug.Log("Value of posY+i: "+(posY+i)+" posX+j "+(posX+j));
-			Debug.Log("Value of matriuzona: "+Persistent.boolmatrix[posY+i][posX+j]);
+			//Debug.Log("Value of matriuzona: "+Persistent.boolmatrix[posY+i][posX+j]);
 			// només es comprova els punts 'plens' del nou element
 			if(matriuNouElement[i][j] == true)
 			{
@@ -510,7 +509,7 @@ function colocarElement(matriuNouElement:Array, posY:int, posX:int)
 				if((posY + i) < 0 || (posY + i) >= Persistent.boolmatrix.length || (posX + j) < 0 || (posX + j) >= Persistent.boolmatrix[0].length)
 					return false;
 									
-				if(Persistent.boolmatrix[posY + i][posX + j] != 0){
+				if(Persistent.boolmatrix[posY + i][posX + j] >= 1 && Persistent.boolmatrix[posY + i][posX + j] <= 3){
 						return false;
 				}				
 			}
@@ -561,13 +560,13 @@ function checkSafeZone(posx : int , posz : int) : int{
 	if (posx < 0 || posz < 0  || posx >= GridGenerator.terrainwidth || posz >= GridGenerator.terrainheight || valor==-1){
 		return -1;
 	}
-	
-	if(Persistent.boolmatrix[posz][posx] == 3 || Persistent.boolmatrix[posz][posx] == -5){
+	//Debug.Log("Persistent.boolmatrix[posz][posx]: "+Persistent.boolmatrix[posz][posx]);
+	if((Persistent.boolmatrix[posz][posx] >= 1 && Persistent.boolmatrix[posz][posx] <= 3 )||Persistent.boolmatrix[posz][posx] == -5){
 		return -5;
 	}
-	
+		
 	Persistent.boolmatrix[posz][posx] = -5;
-	//valor = Persistent.boolmatrix[posz][posx];
+	valor = Persistent.boolmatrix[posz][posx];
 	//west	
 	valor=checkSafeZone((posx-1),posz);
 	//east
@@ -577,7 +576,7 @@ function checkSafeZone(posx : int , posz : int) : int{
 	//south
 	valor=checkSafeZone(posx,(posz-1));
 	
-		
+	
 	return valor;
 	
 	

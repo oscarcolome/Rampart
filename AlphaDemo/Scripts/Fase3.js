@@ -15,13 +15,13 @@ private var ready : boolean =false;
 
 
 function Start () {
+	
 	wave = GameObject.Find("BotWave").transform;
-	for(var i=0;i<numberenemies;i++){
+	for(i=0;i<numberenemies;i++){
 		var pos : Transform = spawnPoint[Random.Range(0, spawnPoint.length)];
 		var bot : Rigidbody = Instantiate(enemy,pos.position,transform.rotation);
 		bot.transform.parent = wave;
 	}
-	//ready=true;
 	remainingSeconds = countDownSeconds;
 		
 }
