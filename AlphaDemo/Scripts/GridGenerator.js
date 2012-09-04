@@ -4,8 +4,6 @@ var tile : Transform;
 var width : int = 100;
 var height : int = 100;
 static var creat = false;
-static var terrainwidth : int;
-static var terrainheight : int;
 private var tileParent : Transform;
 var boolmatrixcreation : Array;
 
@@ -16,6 +14,8 @@ function Start () {
 	GenerateHashMap();
 	//MarkCastle();
 	Persistent.boolmatrix = boolmatrixcreation;
+	Persistent.tilewidth = width;
+	Persistent.tileheight = height;
 	Application.LoadLevel("Fase 1");	
 
 	

@@ -123,7 +123,7 @@ function Update(){
 				
 						figura=ComprovarElement(stone_preview);
 				
-						if(colocarElement(figura,(GridGenerator.terrainheight-hit.point.z),(hit.point.x))){
+						if(colocarElement(figura,(Persistent.tileheight-hit.point.z),(hit.point.x))){
 							solid_stone=DestroyStone_preview();
 							var muralla : Transform = Instantiate(solid_stone,Vector3(hit.point.x,0,hit.point.z), transform.rotation);
 							//muralla.transform.renderer.material.SetColor("_Color",Color.blue);
@@ -511,7 +511,10 @@ function colocarElement(matriuNouElement:Array, posY:int, posX:int)
 									
 				if(Persistent.boolmatrix[posY + i][posX + j] >= 1 && Persistent.boolmatrix[posY + i][posX + j] <= 3){
 						return false;
-				}				
+				}	
+				if(Persistent.boolmatrix[posY + i][posX + j] > 3){
+						return false;
+				}	
 			}
 		}
 	}
@@ -557,16 +560,17 @@ function OnGUI () {
 
 function checkSafeZone(posx : int , posz : int) : int{
 	
-	if (posx < 0 || posz < 0  || posx >= GridGenerator.terrainwidth || posz >= GridGenerator.terrainheight || valor==-1){
+	if (posx < 0 || posz < 0  || posx >= Persistent.tilewidth || posz >= Persistent.tileheight || valor==-1){
 		return -1;
 	}
 	//Debug.Log("Persistent.boolmatrix[posz][posx]: "+Persistent.boolmatrix[posz][posx]);
 	if((Persistent.boolmatrix[posz][posx] >= 1 && Persistent.boolmatrix[posz][posx] <= 3 )||Persistent.boolmatrix[posz][posx] == -5){
 		return -5;
 	}
-		
+	
 	Persistent.boolmatrix[posz][posx] = -5;
-	valor = Persistent.boolmatrix[posz][posx];
+	//valor = Persistent.boolmatrix[posz][posx];
+		
 	//west	
 	valor=checkSafeZone((posx-1),posz);
 	//east
@@ -575,8 +579,7 @@ function checkSafeZone(posx : int , posz : int) : int{
 	valor=checkSafeZone(posx,(posz+1));
 	//south
 	valor=checkSafeZone(posx,(posz-1));
-	
-	
+		
 	return valor;
 	
 	

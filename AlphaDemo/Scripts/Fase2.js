@@ -24,7 +24,17 @@ function Start () {
 	//grid = GameObject.Find("TileArray").GetComponent(Persistent);
 	//wall = GameObject.Find("CubesList");
 	towersPlaced = GameObject.Find("TowersList").transform;
+	if(towersPlaced.GetChildCount() > 0){
+		MarkTowers();
+	}
 	
+}
+
+function MarkTowers(){
+	for(var child in towersPlaced.GetComponentInChildren(Transform)){
+		Persistent.boolmatrix[child.position.z][child.position.x] = 50;
+		Persistent.boolmatrix[child.position.z][child.position.x+1] = 50;
+	}	
 }
 
 function Update () {
@@ -43,7 +53,7 @@ function Update () {
 						
 					figura=checkTurret(preview);
 			
-					if(placeTurret(figura,(GridGenerator.terrainheight-hit.point.z),(hit.point.x))){
+					if(placeTurret(figura,(Persistent.tileheight-hit.point.z),(hit.point.x))){
 						solid=DestroyPreview();
 						var muralla : Rigidbody = Instantiate(solid,Vector3(hit.point.x,0,hit.point.z), transform.rotation);
 						//if(solid == tower){							
@@ -102,9 +112,8 @@ function DestroyPreview(){
 }
 
 function checkTurret(element: Rigidbody){
-	figura = new Array(2);
+	figura = new Array(1);
 	figura[0] = new Array(2);
-	figura[1] = new Array(2);
 	for(i=0;i<figura.length;i++){
 		for(j=0;j<figura[i].length;j++){
 			figura[i][j]=true;
@@ -143,7 +152,7 @@ function placeTurret(matriuNouElement:Array, posY:int, posX:int)
 		{
 			if(matriuNouElement[i][j] == true)
 			{					
-				Persistent.boolmatrix[posY + i][posX + j] = 100;				
+				Persistent.boolmatrix[posY + i][posX + j] = 50;				
 			}
 		}
 	}
