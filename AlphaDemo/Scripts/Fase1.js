@@ -7,9 +7,6 @@ private var roundedRestSeconds : int;
 private var isred : boolean = false;
 
 private var vista_previa : boolean;
-//private var creat : boolean = false;
-//var towerFaseEnd : boolean = false;
-//var towerFaseStart : boolean = false;
 
 private var screenPos;
 private var ray : Ray;
@@ -21,8 +18,6 @@ private var solid_stone : Transform;
 
 private var cubesPlaced :Transform;
 
-
-
 var figura: Array;
 
 var countDownSeconds : int;
@@ -32,34 +27,21 @@ private var xgrid:int;
 private var zgrid:int;
 
 var cubes : Transform[];
-//var tile : Transform;
-//var width : int;
-//var height : int;
-
 
 private var castle : GameObject;
 private var stone : Transform;
-//private var hitwall : RaycastHit;
-//private var yaxis = 50;
+
 private var valor : int = 0;
 private var result: int;
 
 private var fase0;
 private var colliders : boolean = false;
-//private var tiles;
-
-
-//private var steps = 0;
-
-/*function Awake(){
-	DontDestroyOnLoad(transform.gameObject);
-}*/
+var customskin : GUISkin;
 
 function Start(){
 	
 	remainingSeconds = countDownSeconds;	
 	castle = GameObject.FindGameObjectWithTag("Fortress");
-	//fase0 = GameObject.Find("TileArray").GetComponent(Persistent);	
 	cubesPlaced = GameObject.Find("CubesList").transform;	
 	MarkCastle();
 	ResetSafeZone();
@@ -90,7 +72,6 @@ function MarkCastle(){
 	
 	for(var x=xgridless; x<xgridmore+1;x++){		
 		for(var z=zgridless; z<zgridmore+1;z++){	
-			//Debug.Log("Value of boolmatrix"+fase0.boolmatrix[z][x]);	
 			Persistent.boolmatrix[z][x] = 1000;			
 		}
 	}
@@ -126,10 +107,10 @@ function Update(){
 						if(colocarElement(figura,(Persistent.tileheight-hit.point.z),(hit.point.x))){
 							solid_stone=DestroyStone_preview();
 							var muralla : Transform = Instantiate(solid_stone,Vector3(hit.point.x,0,hit.point.z), transform.rotation);							
-							/*var sons : Transform;
+							var sons : Transform;
 							for (sons in muralla.GetComponentInChildren(Transform)){
 								sons.renderer.material.SetColor("_Color", Color.blue);
-							}*/
+							}
 							//if(solid_stone == tower){							
 							muralla.transform.parent = cubesPlaced;
 
@@ -140,7 +121,7 @@ function Update(){
 			}
 		}else{
 			if(Physics.Raycast(ray,hit)){
-				//Debug.Log("I hit at : "+hit.point.x+" tag of "+hit.transform.tag);
+				//Debug.Log("I hit at : "+hit.point.x+" tag of "+hit.transform.tag);				
 				if(!vista_previa)
 					CreateStone_preview(hit);
 				else
@@ -153,15 +134,13 @@ function Update(){
 			result=checkSafeZone(stone.position.x,stone.position.z);		
 		if(result==-5){
 			ConvertirMuralla();
-			MarkCastle();
-			//fase0.boolmatrix = fase0.boolmatrix;
+			MarkCastle();		
 			Application.LoadLevel("Fase 2");
 		}else{
-			//GameObject.Destroy(fase0);
 			GameObject.Destroy(cubesPlaced.gameObject);
 			GameObject.Destroy(GameObject.Find("TileArray"));
-			GameObject.Destroy(GameObject.Find("Fortress"));
-			GameObject.Destroy(GameObject.Find("CublesList"));
+			GameObject.Destroy(GameObject.Find("Mayan"));
+			GameObject.Destroy(GameObject.Find("CubesList"));
 			GameObject.Destroy(GameObject.Find("TowersList"));
 			GameObject.Destroy(GameObject.Find("BotWave"));
 			Application.LoadLevel("Menu");
@@ -171,13 +150,14 @@ function Update(){
 
 function CreateStone_preview(hit:RaycastHit){
 	solid_stone = cubes[Random.Range(0,cubes.length)];		
-	stone_preview = Instantiate(solid_stone,Vector3(hit.point.x,0,hit.point.z), transform.rotation);
+	stone_preview = Instantiate(solid_stone,Vector3(hit.point.x,1,hit.point.z), transform.rotation);
 	vista_previa=true;
 }
 
-function MoveStone_preview(hit:RaycastHit){
-	//hit.transform.position.y = 1;
+function MoveStone_preview(hit:RaycastHit){	
     stone_preview.transform.position = hit.transform.position;
+    if(stone_preview.transform.position.y >= -1 && stone_preview.transform.position.y <= 2 )
+    	stone_preview.transform.position.y = 2;
 }
 
 function DestroyStone_preview(){
@@ -550,11 +530,19 @@ function OnGUI () {
     displayMinutes = roundedRestSeconds / 60; 
 	var text : String;
 	//format del comptador
-    text = String.Format ("Wall the castle: Time remaining: {0:00}:{1:00}", displayMinutes, displaySeconds);
-    	
-   
-    GUI.Label (Rect (100, 10, 300, 40), text);	
-       
+    text = String.Format ("Walls : {0:00}:{1:00}", displayMinutes, displaySeconds);
+    
+    GUI.skin = customskin;   
+    GUI.Label (Rect (0,0,150,40), text);	
+    if(GUI.Button(new Rect(30, 30, 70, 70), "Quit")){
+		GameObject.Destroy(cubesPlaced.gameObject);
+		GameObject.Destroy(GameObject.Find("TileArray"));
+		GameObject.Destroy(GameObject.Find("Fortress"));
+		GameObject.Destroy(GameObject.Find("CubesList"));
+		GameObject.Destroy(GameObject.Find("TowersList"));
+		GameObject.Destroy(GameObject.Find("BotWave"));		
+		Application.LoadLevel("Menu");
+    } 
 }
 
 function checkSafeZone(posx : int , posz : int) : int{

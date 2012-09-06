@@ -32,8 +32,8 @@ function MyWindow() {
 	GUILayout.Space(8);
 	
     GUILayout.Label("Rampart : Tower Defense Game");
-    GUILayout.Label("", "Divider");
-	if (GUILayout.Button("Play Game")){
+    GUILayout.Label("", "Divider");    
+	if (GUILayout.Button("Play Game")){		
 		Application.LoadLevel("Loader");
 	}
 	if (GUILayout.Button("Quit")){

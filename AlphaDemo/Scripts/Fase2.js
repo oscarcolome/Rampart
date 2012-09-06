@@ -15,6 +15,7 @@ private var ray : Ray;
 private var hit : RaycastHit;
 private var grid;
 private var wall;
+var customskin : GUISkin;
 
 var ntowers: int;
 
@@ -74,6 +75,7 @@ function Update () {
 			}
 		}	
 	}else{
+		expandRadius();
 		Application.LoadLevel("Fase 3");
 	}
 }
@@ -181,8 +183,16 @@ function OnGUI () {
 	var text : String;
 	//format del comptador
 	
-    text = String.Format ("Towers: Time remaining: {0:00}:{1:00}", displayMinutes, displaySeconds);
-    
-    GUI.Label (Rect (100, 10, 300, 40), text);	    
+    text = String.Format ("Towers : {0:00}:{1:00}", displayMinutes, displaySeconds);
+    GUI.skin = customskin;
+    GUI.Label (Rect (0,0,150,40), text);	
+    if(GUI.Button(new Rect(30, 30, 70, 70), "Quit")){		
+		GameObject.Destroy(GameObject.Find("TileArray"));
+		GameObject.Destroy(GameObject.Find("Fortress"));
+		GameObject.Destroy(GameObject.Find("CubesList"));
+		GameObject.Destroy(GameObject.Find("TowersList"));
+		GameObject.Destroy(GameObject.Find("BotWave"));
+		Application.LoadLevel("Menu");    
+	}
        
 }

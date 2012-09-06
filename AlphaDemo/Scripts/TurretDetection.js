@@ -2,12 +2,9 @@
 var rocket: Rigidbody;
 var rotatespeed : int;
 var cannon: Transform;
-var shot : Transform;
+private var shot : Transform;
 var target: Transform;
-var scan : List.<Rigidbody>;
 var fireRate = 0.5f;
-//private var rotationDir : Quaternion;
-//private var nextMoveTime : float; 
 private var nextFire = 0.0f;
 private var aimError : float;
 private var queued=true;
@@ -19,7 +16,6 @@ private var bullet : Rigidbody;
 function Start(){
 	
 	shot=cannon.FindChild("ShootPoint");
-	//Debug.Log("Value of scan : "+scan);
 	
 }
 
@@ -37,7 +33,7 @@ function Update(){
 		target.position.z = target.position.z + aimError;
 		cannon.rotation = Quaternion.Lerp(cannon.rotation,Quaternion.LookRotation(target.position-cannon.position),Time.deltaTime*rotatespeed);
 		if(distance <= range && Time.time >= nextFire){
-				Shoot();						
+			Shoot();						
 		}
 	}
 }

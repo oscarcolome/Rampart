@@ -16,7 +16,8 @@ function Update () {
 function OnCollisionEnter(hit : Collision){
 	if(hit.collider.tag== "Bot"){	
 		Destroy(hit.gameObject);
-		Instantiate(explosion,transform.position,transform.rotation);		
+		Instantiate(explosion,transform.position,transform.rotation);	
+		audio.Play();
 		Destroy(gameObject);			
 	}
 }

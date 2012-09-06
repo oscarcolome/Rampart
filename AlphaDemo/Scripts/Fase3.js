@@ -15,7 +15,7 @@ private var remainingSeconds : int;
 private var battle : boolean = false;
 private var ready : boolean =false;
 private var spawned : int = 0;
-
+var customskin : GUISkin;
 
 function Start () {
 	
@@ -58,12 +58,20 @@ function OnGUI () {
     displayMinutes = roundedRestSeconds / 60; 
 	var text : String;
 	//format del comptador
-    text = String.Format ("Battle phase: {0:00}:{1:00}", displayMinutes, displaySeconds);
+    text = String.Format ("Battle : {0:00}:{1:00}", displayMinutes, displaySeconds);
     //display messages or whatever here -->do stuff based on your timer
     //if (restSeconds == 10) {
     	//diferents missatges segons el temps que queda
         //GUI.Label (Rect (100, 10, 300, 40), "Ten Seconds Left!!");
     //}else 
-    GUI.Label (Rect (100, 10, 300, 40), text);	    
-       
+    GUI.skin = customskin;
+    GUI.Label (Rect (0,0,150,40), text);
+    if(GUI.Button(new Rect(30, 30, 70, 70), "Quit")){
+		GameObject.Destroy(GameObject.Find("TileArray"));
+		GameObject.Destroy(GameObject.Find("Fortress"));
+		GameObject.Destroy(GameObject.Find("CubesList"));
+		GameObject.Destroy(GameObject.Find("TowersList"));
+		GameObject.Destroy(GameObject.Find("BotWave"));			
+		Application.LoadLevel("Menu");	    
+    }
 }

@@ -10,9 +10,7 @@ var boolmatrixcreation : Array;
 function Start () {
 	tileParent=GameObject.Find("TileArray").transform;
 	GenerateTiles();	
-	//GenerateCastle();	
 	GenerateHashMap();
-	//MarkCastle();
 	Persistent.boolmatrix = boolmatrixcreation;
 	Persistent.tilewidth = width;
 	Persistent.tileheight = height;
