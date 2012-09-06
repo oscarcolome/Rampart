@@ -125,12 +125,11 @@ function Update(){
 				
 						if(colocarElement(figura,(Persistent.tileheight-hit.point.z),(hit.point.x))){
 							solid_stone=DestroyStone_preview();
-							var muralla : Transform = Instantiate(solid_stone,Vector3(hit.point.x,0,hit.point.z), transform.rotation);
-							//muralla.transform.renderer.material.SetColor("_Color",Color.blue);
-							var sons : Transform;
+							var muralla : Transform = Instantiate(solid_stone,Vector3(hit.point.x,0,hit.point.z), transform.rotation);							
+							/*var sons : Transform;
 							for (sons in muralla.GetComponentInChildren(Transform)){
 								sons.renderer.material.SetColor("_Color", Color.blue);
-							}
+							}*/
 							//if(solid_stone == tower){							
 							muralla.transform.parent = cubesPlaced;
 

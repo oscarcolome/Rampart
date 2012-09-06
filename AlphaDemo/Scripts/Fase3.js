@@ -1,36 +1,43 @@
 
 var enemy : Rigidbody;
-var wave;
+private var wave : Transform;
 var numberenemies : int;
 var spawnPoint : Transform[];
+var countDownSeconds : int;
+private var nextSpawn : float = 0.0f;
+private var spawnSec : float = 0.5f;
 
 private var restSeconds : int = 1;
 private var displaySeconds : int;
 private var displayMinutes : int;
 private var roundedRestSeconds : int;
-var countDownSeconds : int;
 private var remainingSeconds : int;	
 private var battle : boolean = false;
 private var ready : boolean =false;
+private var spawned : int = 0;
 
 
 function Start () {
 	
-	wave = GameObject.Find("BotWave").transform;
-	for(i=0;i<numberenemies;i++){
-		var pos : Transform = spawnPoint[Random.Range(0, spawnPoint.length)];
-		var bot : Rigidbody = Instantiate(enemy,pos.position,transform.rotation);
-		bot.transform.parent = wave;
-	}
+	wave = GameObject.Find("BotWave").transform;	
 	remainingSeconds = countDownSeconds;
 		
 }
 
 function Update () {
+	if(spawned <= numberenemies && Time.timeSinceLevelLoad >= nextSpawn && restSeconds > 0){
+		var pos : Transform = spawnPoint[Random.Range(0, spawnPoint.length)];
+		var bot : Rigidbody = Instantiate(enemy,pos.position,transform.rotation);
+		bot.transform.parent = wave;
+		spawned++;
+	}
 	if(restSeconds == 0){
 		Application.LoadLevel("Fase 1");
 	}
 	
+}
+function spawnTime(){
+	nextSpawn =  spawnSec + Time.timeSinceLevelLoad;
 }
 
 function OnGUI () {

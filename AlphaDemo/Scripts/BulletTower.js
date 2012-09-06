@@ -2,7 +2,7 @@
 private var speed : int = 15;
 private var range : float = 30f;
 private var distance : float;
-
+var explosion : Transform;
 
 
 function Update () {
@@ -15,7 +15,8 @@ function Update () {
 
 function OnCollisionEnter(hit : Collision){
 	if(hit.collider.tag== "Bot"){	
-		Destroy(hit.gameObject);		
+		Destroy(hit.gameObject);
+		Instantiate(explosion,transform.position,transform.rotation);		
 		Destroy(gameObject);			
 	}
 }
