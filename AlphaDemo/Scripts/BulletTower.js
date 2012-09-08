@@ -13,8 +13,8 @@ function Update () {
 	}
 }
 
-function OnCollisionEnter(hit : Collision){
-	if(hit.collider.tag== "Bot"){	
+function OnTriggerEnter(hit : Collider){
+	if(hit.tag== "Bot"){	
 		Destroy(hit.gameObject);
 		Instantiate(explosion,transform.position,transform.rotation);	
 		audio.Play();

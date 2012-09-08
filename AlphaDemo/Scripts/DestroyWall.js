@@ -15,6 +15,13 @@ function OnTriggerEnter( hit : Collider ){
 	if(hit.tag == "Bot"){
 		Destroy(hit.transform.gameObject);
 		Instantiate(explosion, transform.position, transform.rotation);
+		var sons : Transform;
+		var daddy : Transform = transform.parent.gameObject.transform;
+		for(sons in daddy){
+			Debug.Log("Sons? :"+sons.transform);
+			Persistent.boolmatrix[Persistent.tileheight-sons.position.z][sons.position.x] = 0;
+			Destroy(sons.gameObject);
+		}
 		Destroy(transform.parent.gameObject);
 	}
 }

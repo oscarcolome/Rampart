@@ -5,7 +5,7 @@ var numberenemies : int;
 var spawnPoint : Transform[];
 var countDownSeconds : int;
 private var nextSpawn : float = 0.0f;
-private var spawnSec : float = 0.5f;
+private var spawnSec : float = 2f;
 
 private var restSeconds : int = 1;
 private var displaySeconds : int;
@@ -30,6 +30,7 @@ function Update () {
 		var bot : Rigidbody = Instantiate(enemy,pos.position,transform.rotation);
 		bot.transform.parent = wave;
 		spawned++;
+		spawnTime();
 	}
 	if(restSeconds == 0){
 		Application.LoadLevel("Fase 1");
