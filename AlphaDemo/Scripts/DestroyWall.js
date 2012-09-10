@@ -6,6 +6,7 @@ function OnCollisionEnter (hit : Collision) {
 			Persistent.boolmatrix[Persistent.tileheight-transform.position.z,transform.position.x] = Persistent.boolmatrix[Persistent.tileheight-transform.position.z,transform.position.x] - 1;																
 		}else{		
 			Persistent.boolmatrix[Persistent.tileheight-transform.position.z,transform.position.x] = 0;
+			Instantiate(explosion, transform.position, transform.rotation);
 			Destroy(transform.gameObject);						
 		}
 	}
