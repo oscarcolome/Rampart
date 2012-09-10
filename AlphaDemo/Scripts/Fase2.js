@@ -103,7 +103,7 @@ function expandRadius(){
 	var rangedtower : SphereCollider;
 	for(turretes in towersPlaced){
 		rangedtower = turretes.transform.GetComponent(SphereCollider);
-		rangedtower.radius = 30;	
+		rangedtower.radius = 15;	
 	}
 }
 

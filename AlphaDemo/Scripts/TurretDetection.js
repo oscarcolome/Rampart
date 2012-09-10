@@ -7,7 +7,7 @@ var target : Transform;
 var fireRate : float = 0.5f;
 private var nextFire = 0.0f;
 private var aimError : float;
-private var range : float = 30;
+private var range : float = 15;
 private var distance : float;
 private var errorAmount : float = 1f;
 private var bullet : Rigidbody;

@@ -13,7 +13,7 @@ var endPoint : Transform;
 private var dad : Transform;
 
 private var targets: boolean;
-private var range = 20;
+private var range = 10;
 private var distance : float;
 private var hit : RaycastHit;
 var rotatespeed : int;
@@ -33,11 +33,11 @@ function Start(){
 
 function Update () {
 
-	if(Application.loadedLevel == 2 || Application.loadedLevel == 3 && this.enabled){
+	/*if(Application.loadedLevel == 2 || Application.loadedLevel == 3 && this.enabled){
 		this.enabled=false;
 	}else{
 		this.enabled=true;
-	}
+	}*/
 
 	if(endPoint){
 		//Es calcula la distància entre el punt de sortida i el d'arribada		
