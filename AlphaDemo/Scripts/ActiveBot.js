@@ -6,7 +6,7 @@ function Start () {
 	
 	if (botActive ==  null)
 		botActive = transform.GetComponent(Movement);
-
+			
 }
 
 function Update () {

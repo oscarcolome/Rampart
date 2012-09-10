@@ -42,29 +42,19 @@ function spawnTime(){
 }
 
 function OnGUI () {
-    //make sure that your time is based on when this script was first called
-    //instead of when your game started
-    //es resta el temps (ni idea) del temps inicial
     
    	restSeconds = remainingSeconds - (Time.timeSinceLevelLoad);
-   	//quan el comptador arriba a 0, seguira calculant valors negatius
-   	//la funcio max selecciona el maxim entre 0 i el valor del temps
-   	//per mantenir el comptador a 0 quan baixi a -1,-2,-3...
+
    	restSeconds = Mathf.Max(0,restSeconds);
 
-	//display the timer
 	roundedRestSeconds = Mathf.CeilToInt(restSeconds);
-	//s'extreuen els segons i minuts del temps calculat
+
     displaySeconds = roundedRestSeconds % 60;
     displayMinutes = roundedRestSeconds / 60; 
 	var text : String;
-	//format del comptador
+
     text = String.Format ("Battle : {0:00}:{1:00}", displayMinutes, displaySeconds);
-    //display messages or whatever here -->do stuff based on your timer
-    //if (restSeconds == 10) {
-    	//diferents missatges segons el temps que queda
-        //GUI.Label (Rect (100, 10, 300, 40), "Ten Seconds Left!!");
-    //}else 
+ 
     GUI.skin = customskin;
     GUI.Label (Rect (0,0,150,40), text);
     if(GUI.Button(new Rect(30, 30, 70, 70), "Quit")){

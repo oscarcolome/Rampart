@@ -1,15 +1,14 @@
 
-var rocket: Rigidbody;
+var rocket : Rigidbody;
 var rotatespeed : int;
-var cannon: Transform;
+var cannon : Transform;
 private var shot : Transform;
-var target: Transform;
-var fireRate = 0.5f;
+var target : Transform;
+var fireRate : float = 0.5f;
 private var nextFire = 0.0f;
 private var aimError : float;
-private var queued=true;
-private var range = 30;
-private var distance;
+private var range : float = 30;
+private var distance : float;
 private var errorAmount : float = 1f;
 private var bullet : Rigidbody;
 
@@ -20,7 +19,6 @@ function Start(){
 }
 
 function Update(){
-	
 	
 	if(target){
 		distance = Vector3.Distance(transform.position,target.position);
@@ -44,7 +42,6 @@ function OnTriggerEnter(coll: Collider){
 function OnTriggerStay(coll: Collider){	
 	if(target == null && coll.tag == "Bot"){
 		target=coll.gameObject.transform;
-		//target = GameObject.FindGameObjectWithTag("Bot").transform;
 	}	
 }
 

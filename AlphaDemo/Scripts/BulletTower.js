@@ -17,7 +17,6 @@ function OnTriggerEnter(hit : Collider){
 	if(hit.tag== "Bot"){	
 		Destroy(hit.gameObject);
 		Instantiate(explosion,transform.position,transform.rotation);	
-		audio.Play();
 		Destroy(gameObject);			
 	}
 }

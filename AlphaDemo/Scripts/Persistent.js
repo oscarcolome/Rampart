@@ -1,4 +1,4 @@
-static var boolmatrix: Array;
+static var boolmatrix : int [,];
 static var tileheight : int;
 static var tilewidth : int;
 

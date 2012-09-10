@@ -12,13 +12,15 @@ private var screenPos;
 private var ray : Ray;
 private var hit : RaycastHit;
 
+private var i : int;
+private var j : int;
 
 private var stone_preview : Transform;
 private var solid_stone : Transform;
 
 private var cubesPlaced :Transform;
 
-var figura: Array;
+private var figura: boolean[,];
 
 var countDownSeconds : int;
 private var remainingSeconds : int;
@@ -34,7 +36,6 @@ private var stone : Transform;
 private var valor : int = 0;
 private var result: int;
 
-private var fase0;
 private var colliders : boolean = false;
 var customskin : GUISkin;
 
@@ -49,13 +50,13 @@ function Start(){
 }
 
 function ResetSafeZone(){
-	for(var i=0;i<Persistent.boolmatrix.length;i++){
-		for(var j=0;j<Persistent.boolmatrix[i].length;j++){			
-			if(Persistent.boolmatrix[j][i] <= 0 ){
-				Persistent.boolmatrix[j][i] = 0;
+	for(var i : int = 0;i<100;i++){
+		for(var j : int = 0;j<100;j++){			
+			if(Persistent.boolmatrix[j,i] <= 0 ){
+				Persistent.boolmatrix[j,i] = 0;
 			}
 		}
-	}
+	}	
 }
 
 function MarkCastle(){
@@ -70,21 +71,15 @@ function MarkCastle(){
 	xgridmore = Mathf.Round(xgridmore);
 	zgridmore = Mathf.Round(zgridmore);
 	
-	for(var x=xgridless; x<xgridmore+1;x++){		
-		for(var z=zgridless; z<zgridmore+1;z++){	
-			Persistent.boolmatrix[z][x] = 1000;			
+	for(var x : int = xgridless; x<xgridmore+1;x++){		
+		for(var z : int = zgridless; z<zgridmore+1;z++){	
+			Persistent.boolmatrix[z,x] = 1000;			
 		}
 	}
-	//creat=true;
 }
 
-//Colocar el contorn de la muralla.
 function Update(){
-	//com que la funcio update s'executa a cada frame
-	//es comprova el temps, si encara queda temps
-	//es poden posar cubs
-	//si el temps es 0 s'han de canviar les textures dels cubs per paret
-	
+
 	if(!colliders){
 		ShrinkColliders();
 	}
@@ -94,8 +89,7 @@ function Update(){
 		ray = Camera.main.ScreenPointToRay(screenPos);
 		if(Input.GetButtonDown("Fire1")){
 			if(Physics.Raycast(ray,hit)){
-				
-				//Debug.Log("+fase 1.boolmatrix[j][i]: "+Persistent.boolmatrix[hit.point.z][hit.point.x]);
+			
 				hit.point.x = Mathf.Round(hit.point.x);
 				hit.point.y = Mathf.Round(hit.point.y);
 				hit.point.z = Mathf.Round(hit.point.z);
@@ -110,8 +104,7 @@ function Update(){
 							var sons : Transform;
 							for (sons in muralla.GetComponentInChildren(Transform)){
 								sons.renderer.material.SetColor("_Color", Color.blue);
-							}
-							//if(solid_stone == tower){							
+							}						
 							muralla.transform.parent = cubesPlaced;
 
 						}					
@@ -120,8 +113,7 @@ function Update(){
 				}	
 			}
 		}else{
-			if(Physics.Raycast(ray,hit)){
-				//Debug.Log("I hit at : "+hit.point.x+" tag of "+hit.transform.tag);				
+			if(Physics.Raycast(ray,hit)){				
 				if(!vista_previa)
 					CreateStone_preview(hit);
 				else
@@ -169,7 +161,7 @@ function DestroyStone_preview(){
 function ConvertirMuralla(){
 	var peces : Transform;
 	for(peces in cubesPlaced){
-		var sons :Transform;
+		var sons : Transform;
 		for (sons in peces.GetComponentInChildren(Transform)){
 			sons.renderer.material.SetColor("_Color", Color.blue);
 		}
@@ -178,9 +170,11 @@ function ConvertirMuralla(){
 }
 
 function ShrinkColliders(){
-	var range = GameObject.Find("TowersList").transform;
-	for (var alert in range){
-		alert.transform.GetComponent(SphereCollider).collider.radius = 1;
+	var range : Transform = GameObject.Find("TowersList").transform;
+	var ranged : SphereCollider;
+	for (var alert : Transform in range){
+		ranged = alert.transform.GetComponent(SphereCollider);
+		ranged.radius = 1;
 	}
 	colliders = true;
 }
@@ -190,321 +184,223 @@ function ComprovarElement(element:Transform){
 	switch (element.tag){
 							
 		case ("Cub"):
-			//Debug.Log("És el Cub");
-			figura = new Array(2);
-			figura[0] = new Array(2);
-			figura[1] = new Array(2);
-			for(i=0;i<figura.length;i++){
-				for(j=0;j<figura[i].length;j++){
-					figura[i][j]=true;
+			figura = new boolean[2,2];
+			for(i=0;i<2;i++){
+				for(j=0;j<2;j++){
+					figura[i,j]=true;
 				}
 			}
 			break;
 	
 		case ("IHoritzontal"):
-			//Debug.Log("És la IHoritzontal");
-			figura = new Array(1);
-			figura[0] = new Array(4);
-			for(i=0;i<figura.length;i++){
-				for(j=0;j<figura[i].length;j++){
-					figura[i][j]=true;
-				}
-			}
+			figura = new boolean[1,4];
+			
+			for(j=0;j<4;j++){
+				figura[0,j]=true;
+			}	
 			break;
 		
 		case ("IVertical"):
-			//Debug.Log("És la IVertical");
-			figura = new Array(4);
-			for(i=0;i<figura.length;i++){
-				figura[i]=new Array(1);
-			}
-			for(i=0;i<figura.length;i++){
-				for(j=0;j<figura[i].length;j++){
-					figura[i][j]=true;
-				}
+			figura = new boolean[4,1];
+			
+			for(i=0;i<4;i++){
+				figura[i,0]=true;
 			}
 			break;
 			
 		case ("L"):
-			//Debug.Log("És la L");
-			figura = new Array(3);
-			figura[0] = new Array(1);
-			figura[1] = new Array(1);
-			figura[2] = new Array(2);
-			for(i=0;i<figura.length;i++){
-				for(j=0;j<figura[i].length;j++){
-					figura[i][j]=true;
-				}
-			}
+			figura = new boolean [3,2];
+			figura[0,0] = true; 
+			figura[1,0] = true;
+			figura[2,0] = true;
+			figura[2,1] = true;
+
 			break;
 			
 		case ("LGanxoHoritzontal"):
-			//Debug.Log("És la LGanxoHoritzontal");
-			figura = new Array(2);
-			figura[0] = new Array(3);
-			figura[1] = new Array(1);
+			figura = new boolean[2,3];
+			figura[0,0] = true;
+			figura[0,1] = true;
+			figura[0,2] = true;
+			figura[1,0] = true;
 		
-			for(i=0;i<figura.length;i++){
-				for(j=0;j<figura[i].length;j++){
-					figura[i][j]=true;
-				}
-			}
 			break;
 			
 		case ("LVertical"):
-			//Debug.Log("És la LVertical");
-			figura = new Array(3);
-			for(i=0;i<figura.length;i++){
-				figura[i]=new Array(2);
-			}
-		
-			for(i=0;i<figura.length;i++){
-				for(j=0;j<figura[i].length;j++){
-					if(i>0 && j==0)
-						figura[i][j]=false;
-					else
-						figura[i][j]=true;
-				}	
-			}
+			figura = new boolean[3,2];
+			figura[0,0] = true;
+			figura[1,1] = true;
+			figura[2,1] = true;
+			figura[2,1] = true;
+			
 			break;
 		
 		case ("LHoritzontal"):
-			//Debug.Log("És la LHoritzontal");
-			figura = new Array(2);
-			figura[0] = new Array(3);
-			figura[1] = new Array(3);
+
+			figura = new boolean[2,3];
+			figura[0,2] = true;
+			figura[1,0] = true;
+			figura[1,1] = true;
+			figura[1,2] = true;
 		
-			for(i=0;i<figura.length;i++){
-				for(j=0;j<figura[i].length;j++){
-					if(i==0 && j<2)
-						figura[i][j]=false;
-					else
-						figura[i][j]=true;
-				}	
-			}
 			break;
 			
 		case ("LInvertida"):
-			//Debug.Log("És la LInvertida");
-			figura = new Array(3);
+
+			figura = new boolean[3,2];
 						
-			figura[0] = new Array(2);
-			figura[1] = new Array(2);
-			figura[2] = new Array(2);
-			for(i=0;i<figura.length;i++){
-				for(j=0;j<figura[i].length;j++){
-					if(i<=1 && j==0)
-						figura[i][j]=false;
-					else
-						figura[i][j]=true;
-				}
-			}
-			
+			figura[0,1] = true;
+			figura[1,1] = true;
+			figura[2,0] = true;
+			figura[2,1] = true;
+						
 			break;
-		
-		
+				
 		case ("LInvertidaHoritzontal"):
-			//Debug.Log("És la LInvertidaHoritzontal");
-			figura = new Array(2);
-			figura[0] = new Array(1);
-			figura[1] = new Array(3);
-			for(i=0;i<figura.length;i++){
-				for(j=0;j<figura[i].length;j++){
-					if(i==0 && j>0)
-						figura[i][j]=false;
-					else
-						figura[i][j]=true;
-				}
-			}
+			
+			figura = new boolean[2,3];
+			figura[0,0] = true;
+			figura[1,0] = true;
+			figura[1,1] = true;
+			figura[1,2] = true;
+			
 			break;
 		
 		case ("LInvertidaGanxoVertical"):
-			//Debug.Log("És la LGanxoVertical");
-			figura = new Array(3);
-			figura[0] = new Array(2);
-			figura[1] = new Array(1);
-			figura[2] = new Array(1);
-			for(i=0;i<figura.length;i++){
-				for(j=0;j<figura[i].length;j++){
-					figura[i][j]=true;
-				}
-			}
+
+			figura = new boolean[3,2];
+			figura[0,0] = true;
+			figura[1,0] = true;
+			figura[2,0] = true;
+			figura[0,1] = true;
+			
 			break;
 			
 		case ("LInvertidaGanxoHoritzontal"):
-			//Debug.Log("És la LInvertidaGanxoHoritzontal");
-			figura = new Array(2);
-			figura[0] = new Array(3);
-			figura[1] = new Array(3);
-			for(i=0;i<figura.length;i++){
-				for(j=0;j<figura[i].length;j++){
-					if(i==1 && j<=1)
-						figura[i][j]=false;
-					else
-						figura[i][j]=true;
-				}
-			}
+
+			figura = new boolean[2,3];
+			figura[0,0] = true;
+			figura[0,1] = true;
+			figura[0,2] = true;
+			figura[1,2] = true;
+			
 			break;
 		
 		case ("T"):
-			//Debug.Log("És la T");
-			figura = new Array(2);
-			figura[0] = new Array(3);
-			figura[1] = new Array(2);
-			for(i=0;i<figura.length;i++){
-				for(j=0;j<figura[i].length;j++){
-					if(i==1 && j==0)
-						figura[i][j]=false;
-					else
-						figura[i][j]=true;
-				}
-			}
+
+			figura = new boolean[2,3];
+			figura[0,0] = true;
+			figura[0,1] = true;
+			figura[0,2] = true;
+			figura[1,1] = true;
+			
 			break;
 			
 		case ("TAmunt"):
-			//Debug.Log("És la TAmunt");
-			figura = new Array(2);
-			figura[0] = new Array(3);
-			figura[1] = new Array(3);
-			for(i=0;i<figura.length;i++){
-				for(j=0;j<figura[i].length;j++){
-					if(i==0 && (j==0 || j==2))
-						figura[i][j]=false;
-					else
-						figura[i][j]=true;
-				}
-			}
+
+			figura = new boolean[2,3];
+			figura[0,1] = true;
+			figura[1,0] = true;
+			figura[1,1] = true;
+			figura[1,2] = true;
+			
 			break;
 			
 		case ("TVertical"):
-			//Debug.Log("És la TVertical");
-			figura = new Array(3);
-			figura[0] = new Array(1);
-			figura[1] = new Array(2);
-			figura[2] = new Array(1);
-			for(i=0;i<figura.length;i++){
-				for(j=0;j<figura[i].length;j++){
-					figura[i][j]=true;
-				}
-			}
+
+			figura = new boolean[3,2];
+			figura[0,0] = true;
+			figura[1,0] = true;
+			figura[2,0] = true;
+			figura[1,1] = true;
+			
 			break;
 			
 		case ("TVerticalInvertida"):
-			//Debug.Log("És la TVerticalInvertida");
-			figura = new Array(3);
-			for(i=0;i<figura.length;i++){
-				figura[i] = new Array(2);
-			}
-			for(i=0;i<figura.length;i++){
-				for(j=0;j<figura[i].length;j++){
-					if((i==0 || i==2) && (j==0))
-						figura[i][j]=false;
-					else
-						figura[i][j]=true;
-				}
-			}
+
+			figura = new boolean[3,2];
+			figura[1,0] = true;
+			figura[0,1] = true;
+			figura[1,1] = true;
+			figura[2,1] = true;
+			
 			break;
 			
 		case ("Z"):
-			//Debug.Log("És la Z");
-			figura = new Array(2);
-			figura[0] = new Array(2);
-			figura[1] = new Array(3);
-			for(i=0;i<figura.length;i++){
-				for(j=0;j<figura[i].length;j++){
-					if(i==1 && j==0)
-						figura[i][j]=false;
-					else
-						figura[i][j]=true;
-				}
-			}
+
+			figura = new boolean[2,3];			
+			figura[0,0] = true;
+			figura[0,1] = true;
+			figura[1,1] = true;
+			figura[1,2] = true;
+			
 			break;
 			
 		case ("ZVertical"):
-			//Debug.Log("És la ZVertical");
-			figura = new Array(3);
-			figura[0] = new Array(2);
-			figura[1] = new Array(2);
-			figura[2] = new Array(1);
 			
-			for(i=0;i<figura.length;i++){
-				for(j=0;j<figura[i].length;j++){
-					if(i==0 && j==0)
-						figura[i][j]=false;
-					else
-						figura[i][j]=true;
-				}
-			}
+			figura = new boolean[3,2];
+			figura[0,1] = true;
+			figura[1,0] = true;
+			figura[1,1] = true;
+			figura[2,0] = true;
+			
 			break;
 			
 		case ("ZInvertidaVertical"):
-			//Debug.Log("És la ZInvertidaVertical");
-			figura = new Array(3);
-			figura[0] = new Array(1);
-			figura[1] = new Array(2);
-			figura[2] = new Array(2);
-			for(i=0;i<figura.length;i++){
-				for(j=0;j<figura[i].length;j++){
-					if(i==2 && j==0)
-						figura[i][j]=false;
-					else
-						figura[i][j]=true;
-				}
-			}
+
+			figura = new boolean[3,2];
+			figura[0,0] = true;
+			figura[1,0] = true;
+			figura[1,1] = true;
+			figura[2,1] = true;
+			
 			break;
 			
 		case ("ZInvertida"):
-			//Debug.Log("És la ZInvertida");
-			figura = new Array(2);
-			figura[0] = new Array(3);
-			figura[1] = new Array(2);
-			for(i=0;i<figura.length;i++){
-				for(j=0;j<figura[i].length;j++){
-					if(i==0 && j==0)
-						figura[i][j]=false;
-					else
-						figura[i][j]=true;
-				}
-			}
+
+			figura = new boolean[2,3];	
+					
+			figura[0,1] = true;
+			figura[0,2] = true;
+			figura[1,0] = true;
+			figura[1,1] = true;
+			
 			break;
 			
 	}
 	return figura;
 }
 
-function colocarElement(matriuNouElement:Array, posY:int, posX:int)
+function colocarElement(matriuNouElement : boolean[,] , posY:int, posX:int)
 {
-	for(var i = 0; i < matriuNouElement.length; i++)
+	for(var i : int = 0; i < matriuNouElement.GetLength(0); i++)
 	{
-		for(var j = 0; j < matriuNouElement[i].length; j++)
+		for(var j : int = 0; j < matriuNouElement.GetLength(1); j++)
 		{
-			//Debug.Log("Value of posY+i: "+(posY+i)+" posX+j "+(posX+j));
-			//Debug.Log("Value of matriuzona: "+Persistent.boolmatrix[posY+i][posX+j]);
-			// només es comprova els punts 'plens' del nou element
-			if(matriuNouElement[i][j] == true)
+
+			if(matriuNouElement[i,j] == true)
 			{
 				
-				// si alguna part de la peça esta fora dels límits sortim
-				if((posY + i) < 0 || (posY + i) >= Persistent.boolmatrix.length || (posX + j) < 0 || (posX + j) >= Persistent.boolmatrix[0].length)
+				if((posY + i) < 0 || (posY + i) >= Persistent.boolmatrix.GetLength(0) || (posX + j) < 0 || (posX + j) >= Persistent.boolmatrix.GetLength(1))
 					return false;
 									
-				if(Persistent.boolmatrix[posY + i][posX + j] >= 1 && Persistent.boolmatrix[posY + i][posX + j] <= 3){
+				if(Persistent.boolmatrix[posY + i,posX + j] >= 1 && Persistent.boolmatrix[posY + i,posX + j] <= 3){
 						return false;
 				}	
-				if(Persistent.boolmatrix[posY + i][posX + j] > 3){
+				if(Persistent.boolmatrix[posY + i,posX + j] > 3){
 						return false;
 				}	
 			}
 		}
 	}
 	
-	for(i = 0; i < matriuNouElement.length; i++)
+	for(i = 0; i < matriuNouElement.GetLength(0); i++)
 	{
-		for(j = 0; j < matriuNouElement[i].length; j++)
+		for(j = 0; j < matriuNouElement.GetLength(1); j++)
 		{
-			if(matriuNouElement[i][j] == true)
+			if(matriuNouElement[i,j] == true)
 			{	
-				Persistent.boolmatrix[posY + i][posX + j] = 3;						
+				Persistent.boolmatrix[posY + i,posX + j] = 3;						
 			}
 		}
 	}
@@ -513,23 +409,17 @@ function colocarElement(matriuNouElement:Array, posY:int, posX:int)
 
 
 function OnGUI () {
-    //make sure that your time is based on when this script was first called
-    //instead of when your game started
-    //es resta el temps (ni idea) del temps inicial
     
    	restSeconds = remainingSeconds - (Time.timeSinceLevelLoad);
-   	//quan el comptador arriba a 0, seguira calculant valors negatius
-   	//la funcio max selecciona el maxim entre 0 i el valor del temps
-   	//per mantenir el comptador a 0 quan baixi a -1,-2,-3...
+
    	restSeconds = Mathf.Max(0,restSeconds);
 
-	//display the timer
 	roundedRestSeconds = Mathf.CeilToInt(restSeconds);
-	//s'extreuen els segons i minuts del temps calculat
+
     displaySeconds = roundedRestSeconds % 60;
     displayMinutes = roundedRestSeconds / 60; 
 	var text : String;
-	//format del comptador
+
     text = String.Format ("Walls : {0:00}:{1:00}", displayMinutes, displaySeconds);
     
     GUI.skin = customskin;   
@@ -550,13 +440,13 @@ function checkSafeZone(posx : int , posz : int) : int{
 	if (posx < 0 || posz < 0  || posx >= Persistent.tilewidth || posz >= Persistent.tileheight || valor==-1){
 		return -1;
 	}
-	//Debug.Log("Persistent.boolmatrix[posz][posx]: "+Persistent.boolmatrix[posz][posx]);
-	if((Persistent.boolmatrix[posz][posx] >= 1 && Persistent.boolmatrix[posz][posx] <= 3 )||Persistent.boolmatrix[posz][posx] == -5){
+
+	if((Persistent.boolmatrix[posz,posx] >= 1 && Persistent.boolmatrix[posz,posx] <= 3 )||Persistent.boolmatrix[posz,posx] == -5){
 		return -5;
 	}
 	
-	Persistent.boolmatrix[posz][posx] = -5;
-	//valor = Persistent.boolmatrix[posz][posx];
+	Persistent.boolmatrix[posz,posx] = -5;
+
 		
 	//west	
 	valor=checkSafeZone((posx-1),posz);

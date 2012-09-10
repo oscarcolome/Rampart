@@ -13,6 +13,6 @@ function Update () {
 }
 
 function OnCollisionEnter(hit : Collision){
-		//Instantiate(explosion,transform.position,transform.rotation);				
+			
 		Destroy(transform.gameObject);
 }
