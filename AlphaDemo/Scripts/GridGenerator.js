@@ -12,6 +12,7 @@ function Start () {
 	Persistent.boolmatrix = boolmatrixcreation;
 	Persistent.tilewidth = width;
 	Persistent.tileheight = height;
+	Persistent.previousLevel = Application.loadedLevel;
 	Application.LoadLevel("Fase 1");	
 
 	
