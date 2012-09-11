@@ -40,12 +40,16 @@ private var colliders : boolean = false;
 var customskin : GUISkin;
 
 function Start(){
-	
-	remainingSeconds = countDownSeconds;	
+	if(Persistent.previousLevel == 5){
+		remainingSeconds = 10;
+	}else{
+		remainingSeconds = countDownSeconds;	
+	}
 	castle = GameObject.FindGameObjectWithTag("Fortress");
 	cubesPlaced = GameObject.Find("CubesList").transform;	
 	MarkCastle();
 	ResetSafeZone();
+	
 				
 }
 
@@ -126,7 +130,8 @@ function Update(){
 			result=checkSafeZone(stone.position.x,stone.position.z);		
 		if(result==-5){
 			ConvertirMuralla();
-			MarkCastle();		
+			MarkCastle();	
+			Persistent.previousLevel = Application.loadedLevel;	
 			Application.LoadLevel("Fase 2");
 		}else{
 			GameObject.Destroy(cubesPlaced.gameObject);

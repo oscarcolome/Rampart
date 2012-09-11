@@ -33,6 +33,13 @@ function Update () {
 		spawnTime();
 	}
 	if(restSeconds == 0){
+		if(wave.childCount > 0){
+			var son : Transform;
+			for(son in wave.GetComponentInChildren(Transform)){
+				Destroy(son.gameObject);
+			}
+		}
+		Persistent.previousLevel = Application.loadedLevel;
 		Application.LoadLevel("Fase 1");
 	}
 	

@@ -75,6 +75,7 @@ function Update () {
 		}	
 	}else{
 		expandRadius();
+		Persistent.previousLevel = Application.loadedLevel;
 		Application.LoadLevel("Fase 3");
 	}
 }
